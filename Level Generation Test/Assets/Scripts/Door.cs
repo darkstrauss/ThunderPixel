@@ -18,22 +18,27 @@ public class Door : MonoBehaviour {
 
     void Awake()
     {
+        gameObject.isStatic = true;
+        gameObject.transform.localPosition = Vector3.zero;
+
+        GetComponent<BoxCollider>().isTrigger = true;
+
         wall = GetComponentInParent<Wall>();
 
         playerInteraction = Camera.main.GetComponent<PlayerMovement>();
         
-        if (wall.direction == "down" || wall.direction == "back")
+        if (tag == "down" || tag == "back")
         {
-            wallSize = wall.floorGrid.xSize;
+            wallSize = wall.xSize;
         }
         else
         {
-            wallSize = wall.floorGrid.zSize;
+            wallSize = wall.zSize;
         }
 
         xSize = 1;
         ySize = 2;
-        gridX = wall.floorGrid.xSize;
+        gridX = wall.xSize;
 
         Generate();
 
@@ -54,27 +59,27 @@ public class Door : MonoBehaviour {
             for (int x = 0; x < doorVerts.Length / 2; x++, i++)
             {
 
-                if (wall.direction == "down")
+                if (tag == "down")
                 {
                     doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, -0.01f);
                     Vector3 colliderSize = new Vector3(xSize, ySize, 1);
                     SetBoxCollider(colliderSize);
                 }
-                else if (wall.direction == "front")
+                else if (tag == "front")
                 {
                     doorVerts[i] = new Vector3(gridX + 0.01f, y * ySize, wallSize / 2 + (x * xSize));
                     Vector3 colliderSize = new Vector3(xSize, ySize, 1);
                     SetBoxCollider(colliderSize);
                 }
-                else if (wall.direction == "left")
+                else if (tag == "left")
                 {
                     doorVerts[i] = new Vector3(0.01f, y * ySize, wallSize / 2 + (x * xSize));
                     Vector3 colliderSize = new Vector3(xSize, ySize, 1);
                     SetBoxCollider(colliderSize);
                 }
-                else if (wall.direction == "back")
+                else if (tag == "back")
                 {
-                    doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, wall.floorGrid.zSize - 0.01f);
+                    doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, wall.zSize - 0.01f);
                     Vector3 colliderSize = new Vector3(xSize, ySize, 1);
                     SetBoxCollider(colliderSize);
                 }
@@ -102,9 +107,8 @@ public class Door : MonoBehaviour {
 
         mesh.triangles = trianglesDoor;
 
+        mesh.RecalculateBounds();
         mesh.RecalculateNormals();
-
-        tag = wall.direction;
 
         playerInteraction.doors.Add(gameObject);
 
@@ -114,19 +118,19 @@ public class Door : MonoBehaviour {
     {
         BoxCollider collider = GetComponent<BoxCollider>();
         collider.size = colliderSize;
-        if (wall.direction == "front")
+        if (tag == "front")
         {
             collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2 - 1, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
-        else if (wall.direction == "back")
+        else if (tag == "back")
         {
             collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2) - 1);
         }
-        else if (wall.direction == "down")
+        else if (tag == "down")
         {
             collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
-        else if (wall.direction == "left")
+        else if (tag == "left")
         {
             collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
@@ -140,9 +144,9 @@ public class Door : MonoBehaviour {
         }
 
         Gizmos.color = Color.black;
-        for (int i = 0; i < doorVerts.Length; i++)
+        //for (int i = 0; i < doorVerts.Length; i++)
         {
-            Gizmos.DrawSphere(doorVerts[i], 0.1f);
+            //Gizmos.DrawSphere(doorVerts[i], 0.1f);
         }
     }
 
@@ -155,7 +159,7 @@ public class Door : MonoBehaviour {
             Destroy(playerInteraction.activeFloor);
             playerInteraction.activeFloor = null;
             playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count + 1)], Vector3.zero, Quaternion.identity) as GameObject;
+            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
             playerInteraction.activeFloor = newFloor;
 
             GameObject teleportDoor = null;
@@ -198,7 +202,7 @@ public class Door : MonoBehaviour {
             Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
             playerInteraction.player.transform.position = teleportToDoor;
             playerInteraction.ResetPosition(teleportToDoor);
-            justTraveled = 0;
+            justTraveled = 4;
         }
         else if (tag == "down" && justTraveled > 5)
         {
@@ -250,7 +254,6 @@ public class Door : MonoBehaviour {
             Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(-0.5f, 0.0f, 0.5f);
             playerInteraction.player.transform.position = teleportToDoor;
             playerInteraction.ResetPosition(teleportToDoor);
-            justTraveled = 0;
         }
     }
 

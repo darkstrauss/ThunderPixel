@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [RequireComponent (typeof (MeshFilter), typeof (MeshRenderer), typeof (BoxCollider))]
 public class Grid : MonoBehaviour {
 
-    public Material floorMaterial;
+    private Material floorMaterial;
     public int xSize, zSize;
 
     public Vector3[] floorVerts;
@@ -16,13 +16,16 @@ public class Grid : MonoBehaviour {
 
     private void Awake()
     {
+        gameObject.isStatic = true;
         Generate();
     }
 
     private void Generate()
     {
         floorVerts = new Vector3[(xSize + 1) * (zSize + 1)];
-        Vector2[] uvFloor = new Vector2[floorVerts.Length]; 
+        Vector2[] uvFloor = new Vector2[floorVerts.Length];
+
+        floorMaterial = Resources.Load<Material>("floor");
 
         for (int i = 0, y = 0; y < zSize + 1; y++)
         {
@@ -62,14 +65,41 @@ public class Grid : MonoBehaviour {
         collider.size = colliderSize;
         collider.center = floorVerts[floorVerts.Length/2];
 
+        meshFloor.RecalculateBounds();
         meshFloor.RecalculateNormals();
 
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = floorMaterial;
         meshRenderer.material.mainTextureScale = new Vector2(xSize, zSize);
+
+        gameObject.tag = "floor";
+
+        GameObject front = new GameObject("front");
+        front.transform.parent = gameObject.transform;
+        front.layer = 2;
+        front.tag = "front";
+        front.AddComponent<Wall>();
+
+        GameObject back = new GameObject("back");
+        back.transform.parent = gameObject.transform;
+        back.layer = 2;
+        back.tag = "back";
+        back.AddComponent<Wall>();
+
+        GameObject down = new GameObject("down");
+        down.transform.parent = gameObject.transform;
+        down.layer = 2;
+        down.tag = "down";
+        down.AddComponent<Wall>();
+
+        GameObject left = new GameObject("left");
+        left.transform.parent = gameObject.transform;
+        left.layer = 2;
+        left.tag = "left";
+        left.AddComponent<Wall>();
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         if (floorVerts == null)
         {
@@ -79,7 +109,7 @@ public class Grid : MonoBehaviour {
         Gizmos.color = Color.black;
         for (int i = 0; i < floorVerts.Length; i++)
         {
-            Gizmos.DrawSphere(floorVerts[i], 0.1f);
+            Gizmos.DrawSphere(transform.TransformPoint(floorVerts[i]), 0.1f);
         }
-    }
+    }*/
 }

@@ -11,18 +11,25 @@ public class Wall : MonoBehaviour {
 
     private Mesh mesh;
 
-    public Material wallMat;
+    private Material wallMat;
 
     private Vector2 materialScale;
 
-    public string direction;
+    private string direction;
 
     void Awake()
     {
+        gameObject.isStatic = true;
+
+        gameObject.transform.localPosition = Vector3.zero;
 
         xSize = GetComponentInParent<Grid>().xSize;
         zSize = GetComponentInParent<Grid>().zSize;
         gridX = xSize;
+
+        direction = gameObject.name;
+
+        wallMat = Resources.Load<Material>("wall");
 
         if (direction == "front" || direction == "down")
         {
@@ -112,7 +119,14 @@ public class Wall : MonoBehaviour {
 
         mesh.Optimize();
 
+        mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+
+        GameObject door = new GameObject("door");
+        door.layer = 2;
+        door.tag = gameObject.name;
+        door.transform.parent = gameObject.transform;
+        door.AddComponent<Door>();
     }
 
     private void SetBoxCollider(Vector3 colliderSize)
@@ -145,9 +159,9 @@ public class Wall : MonoBehaviour {
         }
 
         Gizmos.color = Color.black;
-        for (int i = 0; i < wallVerts.Length; i++)
+        //for (int i = 0; i < wallVerts.Length; i++)
         {
-            Gizmos.DrawSphere(wallVerts[i], 0.1f);
+            //Gizmos.DrawSphere(wallVerts[i], 0.1f);
         }
     }
 }
