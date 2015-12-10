@@ -63,7 +63,7 @@ public class Grid : MonoBehaviour {
 
         BoxCollider collider = GetComponent<BoxCollider>();
         collider.size = colliderSize;
-        collider.center = floorVerts[floorVerts.Length/2];
+        collider.center = new Vector3(xSize / 2, 0.0f, zSize / 2);
 
         meshFloor.RecalculateBounds();
         meshFloor.RecalculateNormals();

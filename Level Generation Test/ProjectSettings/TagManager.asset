@@ -10,6 +10,7 @@ TagManager:
   - down
   - left
   - MovementFloor
+  - Text
   layers:
   - Default
   - TransparentFX
