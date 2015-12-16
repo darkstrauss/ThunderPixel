@@ -1,0 +1,131 @@
+{
+    "Horizontal": [
+        {
+            "id": 0,
+            "pos": [
+                123,
+                456,
+                789,
+                321,
+                654,
+                987
+            ]
+        },
+        {
+            "id": 1,
+            "AttackStats":{
+                "name":"Horizontal",
+                "comboM": 1,
+                "dmg": 10,
+                "effect": "none"
+            }
+        }
+    ],
+    "Vertical": [
+        {
+            "id": 0,
+            "pos": [
+                147,
+                741,
+                258,
+                852,
+                369,
+                963
+            ]
+        },
+        {
+            "id": 1,
+            "AttackStats": {
+                "name": "Vertical",
+                "comboM": 1,
+                "dmg": 15,
+                "effect": "none"
+            }
+        }
+    ],
+    "Diagonal": [
+        {
+            "id": 0,
+            "pos": [
+                159,
+                951,
+                357,
+                753
+            ]
+        },
+        {
+            "id": 1,
+            "AttackStats": {
+                "name":"Diagonal",
+                "comboM": 2,
+                "dmg": 20,
+                "effect": "none"
+            }
+        }
+    ],
+    "Jab":[
+        {
+            "id":0,
+            "pos":[
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+           ] 
+        },
+        {
+            "id":1,
+            "AttackStats":{
+                "name":"Temp",
+                "comboM":1,
+                "dmg":1,
+                "effect":"none"
+            }
+        }
+    ],
+    // Copy this Strike below to add more options
+    "Temp":[
+        {
+            "id":0,
+            "pos":[
+                0,
+                0
+           ] 
+        },
+        {
+            "id":1,
+            "AttackStats":{
+                "name":"Temp",
+                "comboM":1,
+                "dmg":1,
+                "effect":"none"
+            }
+        }
+    ],
+    // Last Strike Option 
+    "LastSpiral":[
+        {
+            "id":0,
+            "pos":[
+                123698745,
+                369874125,
+                987412365,
+                741236985
+           ] 
+        },
+        {
+            "id":1,
+            "AttackStats":{
+                "name":"LastSpiral",
+                "comboM":1,
+                "dmg":1,
+                "effect":"none"
+            }
+        }
+    ] 
+}
