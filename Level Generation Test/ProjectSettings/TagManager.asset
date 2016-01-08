@@ -11,6 +11,7 @@ TagManager:
   - left
   - MovementFloor
   - Text
+  - water
   layers:
   - Default
   - TransparentFX

@@ -9,6 +9,8 @@ public class Door : MonoBehaviour {
     private Wall wall;
     private Mesh mesh;
     public Vector3[] doorVerts;
+    public GameObject grid;
+    public GenerateContent generator;
     public Material doorMaterial;
     private Vector2 materialScale;
     private Vector2[] uv;
@@ -24,7 +26,9 @@ public class Door : MonoBehaviour {
         GetComponent<BoxCollider>().isTrigger = true;
 
         wall = GetComponentInParent<Wall>();
-
+        grid = wall.floorObject;
+        generator = grid.GetComponent<GenerateContent>();
+            
         playerInteraction = Camera.main.GetComponent<PlayerMovement>();
         
         if (tag == "down" || tag == "back")
@@ -61,27 +65,19 @@ public class Door : MonoBehaviour {
 
                 if (tag == "down")
                 {
-                    doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, -0.01f);
-                    Vector3 colliderSize = new Vector3(xSize, ySize, 1);
-                    SetBoxCollider(colliderSize);
+                    doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, -0.01f); 
                 }
                 else if (tag == "front")
                 {
                     doorVerts[i] = new Vector3(gridX + 0.01f, y * ySize, wallSize / 2 + (x * xSize));
-                    Vector3 colliderSize = new Vector3(xSize, ySize, 1);
-                    SetBoxCollider(colliderSize);
                 }
                 else if (tag == "left")
                 {
                     doorVerts[i] = new Vector3(0.01f, y * ySize, wallSize / 2 + (x * xSize));
-                    Vector3 colliderSize = new Vector3(xSize, ySize, 1);
-                    SetBoxCollider(colliderSize);
                 }
                 else if (tag == "back")
                 {
                     doorVerts[i] = new Vector3(wallSize / 2 + (x * xSize), y * ySize, wall.zSize - 0.01f);
-                    Vector3 colliderSize = new Vector3(xSize, ySize, 1);
-                    SetBoxCollider(colliderSize);
                 }
                 else
                 {
@@ -91,6 +87,9 @@ public class Door : MonoBehaviour {
                 uv[i] = new Vector2((float)x / xSize, (float)y / ySize);
             }
         }
+
+        Vector3 colliderSize = new Vector3(xSize, ySize, 1);
+        SetBoxCollider(colliderSize);
 
         mesh.vertices = doorVerts;
         mesh.uv = uv;
@@ -120,20 +119,21 @@ public class Door : MonoBehaviour {
         collider.size = colliderSize;
         if (tag == "front")
         {
-            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2 - 1, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
+            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2 - 1.01f, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
         else if (tag == "back")
         {
-            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2) - 1);
+            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2) - 0.99f);
         }
         else if (tag == "down")
         {
-            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
+            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2) + 0.01f);
         }
         else if (tag == "left")
         {
-            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
+            collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2 - 0.01f, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
+        generator.takenSpots.Add(collider.center);
     }
 
     private void OnDrawGizmos()
@@ -158,6 +158,7 @@ public class Door : MonoBehaviour {
 
             Destroy(playerInteraction.activeFloor);
             playerInteraction.activeFloor = null;
+            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
             GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
             playerInteraction.activeFloor = newFloor;
@@ -184,6 +185,7 @@ public class Door : MonoBehaviour {
 
             Destroy(playerInteraction.activeFloor);
             playerInteraction.activeFloor = null;
+            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
             GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
             playerInteraction.activeFloor = newFloor;
@@ -202,7 +204,7 @@ public class Door : MonoBehaviour {
             Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
             playerInteraction.player.transform.position = teleportToDoor;
             playerInteraction.ResetPosition(teleportToDoor);
-            justTraveled = 4;
+            justTraveled = 0;
         }
         else if (tag == "down" && justTraveled > 5)
         {
@@ -210,6 +212,7 @@ public class Door : MonoBehaviour {
 
             Destroy(playerInteraction.activeFloor);
             playerInteraction.activeFloor = null;
+            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
             GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
             playerInteraction.activeFloor = newFloor;
@@ -236,6 +239,7 @@ public class Door : MonoBehaviour {
 
             Destroy(playerInteraction.activeFloor);
             playerInteraction.activeFloor = null;
+            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
             GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
             playerInteraction.activeFloor = newFloor;

@@ -15,7 +15,7 @@ GameObject:
   - 114: {fileID: 11402862}
   m_Layer: 0
   m_Name: floor20x20
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -92,8 +92,13 @@ MonoBehaviour:
   - {fileID: 105568, guid: f0394b70ee0228148aa5675ce2d3e65e, type: 2}
   - {fileID: 177320, guid: 14cbb30c3cceb644ab17defebcbda917, type: 2}
   - {fileID: 102916, guid: f99623b3be544b74abf09b503a695921, type: 2}
+  - {fileID: 176276, guid: 8ee9dd882dec85c4491fb1c9da278a58, type: 2}
+  - {fileID: 107330, guid: eafa44f64d7a0ca41b6824570a5b4e69, type: 2}
   - {fileID: 106792, guid: ee4bfcc0a6f3a4944ab15a4d3c99d2fd, type: 2}
-  amountOfItems: 10
+  takenSpots: []
+  text: {fileID: 0}
+  amountOfItems: 25
+  SEED: 0
 --- !u!114 &11431562
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -109,6 +114,7 @@ MonoBehaviour:
   zSize: 20
   floorVerts: []
   doors: []
+  floorObject: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -118,7 +124,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: availibleGameObjects.Array.size
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: xSize
@@ -130,7 +136,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: amountOfItems
-      value: 10
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: availibleGameObjects.Array.data[0]
@@ -147,7 +153,15 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: availibleGameObjects.Array.data[3]
       value: 
-      objectReference: {fileID: 106792, guid: ee4bfcc0a6f3a4944ab15a4d3c99d2fd, type: 2}
+      objectReference: {fileID: 176276, guid: 8ee9dd882dec85c4491fb1c9da278a58, type: 2}
+    - target: {fileID: 0}
+      propertyPath: availibleGameObjects.Array.data[4]
+      value: 
+      objectReference: {fileID: 107330, guid: eafa44f64d7a0ca41b6824570a5b4e69, type: 2}
+    - target: {fileID: 0}
+      propertyPath: m_TagString
+      value: floor
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 156968}

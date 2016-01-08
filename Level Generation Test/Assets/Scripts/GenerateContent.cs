@@ -9,13 +9,13 @@ public class GenerateContent : MonoBehaviour
     public List<Vector3> takenSpots;
     public Text text;
     private Grid grid;
+    private int lastSelection;
     public int amountOfItems;
     public int SEED;
 
     private void Awake()
     {
         grid = GetComponent<Grid>();
-        
     }
 
     void Start()
@@ -39,7 +39,6 @@ public class GenerateContent : MonoBehaviour
             text.text = "" + SEED;
         }
         
-        
         Debug.Log("LEVEL SEED: " + SEED);
 
         Generate();
@@ -49,16 +48,50 @@ public class GenerateContent : MonoBehaviour
     {
         if (amountOfItems > 0)
         {
-            GameObject temp = Instantiate(availibleGameObjects[Random.Range(0, availibleGameObjects.Count)], Vector3.zero, Quaternion.identity) as GameObject;
+            int selection = Random.Range(0, availibleGameObjects.Count - 1);
+
+            GameObject temp = Instantiate(availibleGameObjects[selection], Vector3.zero, Quaternion.identity) as GameObject;
             
             temp.transform.position = new Vector3(Mathf.Floor(Random.Range(1, grid.xSize - 1)) + 0.5f, temp.GetComponent<MeshRenderer>().bounds.size.y / 2.0f, Mathf.Floor(Random.Range(1, grid.zSize - 1)) + 0.5f);
 
-            for (int i = 0; i < takenSpots.Count; i++)
+            float heightGet = temp.GetComponent<MeshRenderer>().bounds.size.y / 2;
+
+            if (takenSpots.Count != 0)
             {
-                if (takenSpots[i].Equals(temp.transform.position))
+                if (lastSelection == selection)
                 {
-                    temp.transform.position = new Vector3(Mathf.Floor(Random.Range(1, grid.xSize - 1)) + 0.5f, temp.GetComponent<MeshRenderer>().bounds.size.y / 2.0f, Mathf.Floor(Random.Range(1, grid.zSize - 1)) + 0.5f);
-                    break;
+                    temp.transform.position = takenSpots[takenSpots.Count - 1];
+                    temp.transform.position += new Vector3((int)Random.Range(-1, 1), 0.0f, (int)Random.Range(-1, 1));
+
+                    foreach (Vector3 item in takenSpots)
+                    {
+                        if (item.x == temp.transform.position.x && item.z == temp.transform.position.z)
+                        {
+                            temp.transform.position += new Vector3((int)Random.Range(-1, 1), 0.0f, (int)Random.Range(-1, 1));
+                        }
+                    }
+
+                    if (temp.transform.position.x > grid.xSize || temp.transform.position.x < 0)
+                    {
+                        Destroy(temp);
+                        Debug.Log("REMOVING OBJECT OUTOFBOUNDS");
+                    }
+                    else if (temp.transform.position.z > grid.zSize || temp.transform.position.z < 0)
+                    {
+                        Destroy(temp);
+                        Debug.Log("REMOVING OBJECT OUTOFBOUNDS");
+                    }
+                }
+                else
+                {
+                    foreach (Vector3 item in takenSpots)
+                    {
+                        while (item.x == temp.transform.position.x && item.z == temp.transform.position.z)
+                        {
+                            Debug.Log("SWAPPING VECTORS FOR OBJECT: " + item);
+                            temp.transform.position = new Vector3(Mathf.Floor(Random.Range(1, grid.xSize - 1)) + 0.5f, heightGet, Mathf.Floor(Random.Range(1, grid.zSize - 1)) + 0.5f);
+                        }
+                    }
                 }
             }
 
@@ -66,6 +99,7 @@ public class GenerateContent : MonoBehaviour
             temp.transform.parent = gameObject.transform;
             temp.name = "" + amountOfItems;
             temp.isStatic = true;
+            lastSelection = selection;
             amountOfItems--;
             Generate();
         }

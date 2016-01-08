@@ -11,6 +11,8 @@ public class Wall : MonoBehaviour {
 
     private Mesh mesh;
 
+    public GameObject floorObject;
+
     private Material wallMat;
 
     private Vector2 materialScale;
@@ -26,10 +28,13 @@ public class Wall : MonoBehaviour {
         xSize = GetComponentInParent<Grid>().xSize;
         zSize = GetComponentInParent<Grid>().zSize;
         gridX = xSize;
+        floorGrid = GetComponentInParent<Grid>();
+
+        floorObject = floorGrid.floorObject;
 
         direction = gameObject.name;
 
-        wallMat = Resources.Load<Material>("wall");
+        wallMat = Resources.Load<Material>("Materials/wall");
 
         if (direction == "front" || direction == "down")
         {
@@ -122,6 +127,14 @@ public class Wall : MonoBehaviour {
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
+        ///*
+        /// this is used to make the generated walls invisible
+        ///*
+        meshRenderer.enabled = false;
+
+        PlaceWallStructures(direction);
+        PlaceTrees(direction);
+
         GameObject door = new GameObject("door");
         door.layer = 2;
         door.tag = gameObject.name;
@@ -148,6 +161,152 @@ public class Wall : MonoBehaviour {
         else if (direction == "left")
         {
             collider.center = new Vector3(0.0f, (float)ySize / 2, (float)zSize / 2);
+        }
+    }
+
+    private void PlaceWallStructures(string direction)
+    {
+        GameObject wall = Instantiate(Resources.Load("Prefabs/Chocolate Wall"), Vector3.zero, Quaternion.identity) as GameObject;
+        Vector3 placementLocation = Vector3.zero;
+        wall.transform.parent = transform;
+
+        if (direction == "front")
+        {
+            //dont rotate, offsetZ + 1 unit, offsetX = gridXsize
+            int choice = Mathf.RoundToInt(Random.Range(0, 3));
+            if (choice == 0)
+            {
+                placementLocation = new Vector3(xSize, 0, Random.Range(1, zSize / 2));
+            }
+            else if (choice == 1)
+            {
+                placementLocation = new Vector3(xSize, 0, Random.Range(zSize / 2 + 2, zSize));
+            }
+            else if (choice == 2)
+            {
+                Destroy(wall);
+            }
+
+            if (wall != null)
+            {
+                wall.transform.position = placementLocation;
+            }
+        }
+        else if (direction == "back")
+        {
+            //rotate 90 degrees, offsetX + 1 unit, offsetZ = gridZsize
+            int choice = Mathf.RoundToInt(Random.Range(0, 3));
+            if (choice == 0)
+            {
+                placementLocation = new Vector3(Random.Range(1, xSize / 2), 0, zSize);
+            }
+            else if (choice == 1)
+            {
+                placementLocation = new Vector3(Random.Range(xSize / 2 + 2, xSize), 0, zSize);
+            }
+            else if (choice == 2)
+            {
+                Destroy(wall);
+            }
+
+            if (wall != null)
+            {
+                wall.transform.position = placementLocation;
+                wall.transform.Rotate(Vector3.up, 90.0f);
+            }
+        }
+        else if (direction == "down")
+        {
+            //rotate 90 degrees, offsetX + 1 unit
+            int choice = Mathf.RoundToInt(Random.Range(0, 3));
+            if (choice == 0)
+            {
+                placementLocation = new Vector3(Random.Range(1, xSize / 2), 0, 0);
+            }
+            else if (choice == 1)
+            {
+                placementLocation = new Vector3(Random.Range(xSize / 2 + 2, xSize), 0, 0);
+            }
+            else if (choice == 2)
+            {
+                Destroy(wall);
+            }
+
+            if (wall != null)
+            {
+                wall.transform.position = placementLocation;
+                wall.transform.Rotate(Vector3.up, 90.0f);
+            }
+        }
+        else if (direction == "left")
+        {
+            //dont rotate, offsetZ + 1 unit
+            int choice = Mathf.RoundToInt(Random.Range(0, 3));
+            if (choice == 0)
+            {
+                placementLocation = new Vector3(0, 0, Random.Range(1, zSize / 2));
+            }
+            else if (choice == 1)
+            {
+                placementLocation = new Vector3(0, 0, Random.Range(zSize / 2 + 2, zSize));
+            }
+            else if (choice == 2)
+            {
+                Destroy(wall);
+            }
+
+            if (wall != null)
+            {
+                wall.transform.position = placementLocation;
+            }
+        }
+        else
+        {
+            Debug.LogError("NO DIRECTION SET/INPROPPER");
+        }
+    }
+
+    private void PlaceTrees(string direction)
+    {
+        if (direction == "front")
+        {
+            for (int i = 0; i < zSize; i++)
+            {
+                GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                tree.transform.parent = transform;
+                tree.transform.Translate(new Vector3(xSize + 0.5f + (i % 2), 1, i * 1 + 0.5f));
+            }
+        }
+        else if (direction == "back")
+        {
+            for (int i = 0; i < xSize; i++)
+            {
+                GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                tree.transform.parent = transform;
+                tree.transform.Translate(new Vector3(0.5f + i * 1, 1, zSize + 0.5f + (i % 2)));
+            }
+        }
+        else if (direction == "down")
+        {
+            for (int i = 0; i < xSize; i++)
+            {
+                GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                tree.transform.parent = transform;
+                tree.transform.Translate(new Vector3(0.5f + i * 1, 1, -0.5f - (i % 2)));
+            }
+        }
+        else if (direction == "left")
+        {
+            for (int i = 0; i < zSize; i++)
+            {
+                GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                tree.transform.parent = transform;
+                tree.transform.transform.Translate(new Vector3(-0.5f - (i % 2), 1, i * 1 + 0.5f));
+            }
+        }
+        else
+        {
+            Debug.LogError("NO DIRECTION SET/INPROPPER");
         }
     }
 

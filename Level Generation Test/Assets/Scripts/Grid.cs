@@ -5,27 +5,32 @@ using System.Collections.Generic;
 [RequireComponent (typeof (MeshFilter), typeof (MeshRenderer), typeof (BoxCollider))]
 public class Grid : MonoBehaviour {
 
-    private Material floorMaterial;
+    private Material floorMaterial, waterMaterial;
     public int xSize, zSize;
 
-    public Vector3[] floorVerts;
+    public Vector3[] floorVerts, waterVerts;
 
     private Mesh meshFloor, meshWallsBack, meshWallsFront;
 
     public List<GameObject> doors;
 
+    public GameObject floorObject;
+
     private void Awake()
     {
         gameObject.isStatic = true;
+        floorObject = this.gameObject;
         Generate();
     }
 
     private void Generate()
     {
         floorVerts = new Vector3[(xSize + 1) * (zSize + 1)];
+
         Vector2[] uvFloor = new Vector2[floorVerts.Length];
 
-        floorMaterial = Resources.Load<Material>("floor");
+        floorMaterial = Resources.Load<Material>("Materials/floor");
+        waterMaterial = Resources.Load<Material>("Materials/water");
 
         for (int i = 0, y = 0; y < zSize + 1; y++)
         {
@@ -35,6 +40,14 @@ public class Grid : MonoBehaviour {
                 uvFloor[i] = new Vector2((float)x / xSize, (float)y / zSize);
             }
         }
+
+        floorVerts[50].y = -0.5f;
+        floorVerts[51].y = -0.5f;
+        floorVerts[50 + xSize + 1].y = -0.5f;
+        floorVerts[51 + xSize + 1].y = -0.5f;
+
+        //floorVerts[50 + xSize].y = -0.5f;
+        //floorVerts[51 + xSize].y = -0.5f;
 
         GetComponent<MeshFilter>().mesh = meshFloor = new Mesh();
         meshFloor.name = "Generated Floor Mesh";
@@ -73,6 +86,11 @@ public class Grid : MonoBehaviour {
         meshRenderer.material.mainTextureScale = new Vector2(xSize, zSize);
 
         gameObject.tag = "floor";
+
+        GameObject water = new GameObject("water");
+        water.transform.parent = gameObject.transform;
+        water.tag = "water";
+        water.AddComponent<Water>();
 
         GameObject front = new GameObject("front");
         front.transform.parent = gameObject.transform;
