@@ -41,10 +41,10 @@ public class Grid : MonoBehaviour {
             }
         }
 
-        floorVerts[50].y = -0.5f;
-        floorVerts[51].y = -0.5f;
-        floorVerts[50 + xSize + 1].y = -0.5f;
-        floorVerts[51 + xSize + 1].y = -0.5f;
+        //floorVerts[50].y = -0.5f;
+        //floorVerts[51].y = -0.5f;
+        //floorVerts[50 + xSize + 1].y = -0.5f;
+        //floorVerts[51 + xSize + 1].y = -0.5f;
 
         //floorVerts[50 + xSize].y = -0.5f;
         //floorVerts[51 + xSize].y = -0.5f;

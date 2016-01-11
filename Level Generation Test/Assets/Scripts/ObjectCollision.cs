@@ -149,14 +149,7 @@ public class ObjectCollision : MonoBehaviour {
 
     private bool checkContents(GameObject checkThis)
     {
-        if (obscureListDown.Contains(checkThis) || obscureListRight.Contains(checkThis))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (obscureListDown.Contains(checkThis) || obscureListRight.Contains(checkThis));
     }
 
     private void RayCastFromHitObjectDown(GameObject castFromThis)

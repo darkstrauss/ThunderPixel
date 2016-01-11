@@ -274,7 +274,9 @@ public class Wall : MonoBehaviour {
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
                 tree.transform.parent = transform;
-                tree.transform.Translate(new Vector3(xSize + 0.5f + (i % 2), 1, i * 1 + 0.5f));
+                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                tree.transform.Translate(new Vector3(xSize + 0.5f + (i % 2), 0, i * 1 + 0.5f));
+                tree.transform.Rotate(randomRotation);
             }
         }
         else if (direction == "back")
@@ -283,7 +285,9 @@ public class Wall : MonoBehaviour {
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
                 tree.transform.parent = transform;
-                tree.transform.Translate(new Vector3(0.5f + i * 1, 1, zSize + 0.5f + (i % 2)));
+                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                tree.transform.Translate(new Vector3(0.5f + i * 1, 0, zSize + 0.5f + (i % 2)));
+                tree.transform.Rotate(randomRotation);
             }
         }
         else if (direction == "down")
@@ -292,7 +296,9 @@ public class Wall : MonoBehaviour {
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
                 tree.transform.parent = transform;
-                tree.transform.Translate(new Vector3(0.5f + i * 1, 1, -0.5f - (i % 2)));
+                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                tree.transform.Translate(new Vector3(0.5f + i * 1, 0, -0.5f - (i % 2)));
+                tree.transform.Rotate(randomRotation);
             }
         }
         else if (direction == "left")
@@ -301,7 +307,9 @@ public class Wall : MonoBehaviour {
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
                 tree.transform.parent = transform;
-                tree.transform.transform.Translate(new Vector3(-0.5f - (i % 2), 1, i * 1 + 0.5f));
+                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                tree.transform.transform.Translate(new Vector3(-0.5f - (i % 2), 0, i * 1 + 0.5f));
+                tree.transform.Rotate(randomRotation);
             }
         }
         else
