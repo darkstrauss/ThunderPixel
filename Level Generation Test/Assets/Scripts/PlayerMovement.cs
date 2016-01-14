@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public List<GameObject> doors;
     private Camera mainCamera;
     public GameObject player, activeFloor, pointer, previousHit;
+    private Grid activeGrid;
     public Vector3 target, destinationPosition;
     private Transform playerTransform;
     private float moveSpeed, previousCast, pastDistance, previousMove;
@@ -18,8 +19,6 @@ public class PlayerMovement : MonoBehaviour
     public GameObject debugParticle;
     public Material seeThroughMat;
     private Material tempMat;
-    public List<GameObject> obscureList;
-    public List<Material> obscureMatList;
     private bool raycastObscure, checkForObject;
 
     void Start()
@@ -28,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
         playerTransform = player.transform;
         destinationPosition = playerTransform.position;
         activeFloor = GameObject.FindGameObjectWithTag("floor");
+        activeGrid = activeFloor.GetComponent<Grid>();
         previousCast = 0;
         raycastObscure = false;
         previousHit = gameObject;
@@ -57,6 +57,11 @@ public class PlayerMovement : MonoBehaviour
             moveSpeed = 0;
             remainingDistance = 0;
             ResetPosition(player.transform.position);
+            if (activeGrid.path != null && activeGrid.path.Count > 0)
+            {
+                activeGrid.ClearPath();
+            }
+            
             Destroy(instantiatedPointer);
             if (checkForObject)
             {
@@ -92,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     player.GetComponent<ObjectCollision>().CollisionDetection();
                     Vector3 targetPoint = hit.point;
-                    destinationPosition = new Vector3(Mathf.Floor(targetPoint.x) + 0.5f, Mathf.Floor(targetPoint.y), Mathf.Floor(targetPoint.z) + 0.5f);
+                    destinationPosition = new Vector3(Mathf.Floor(targetPoint.x) + 0.5f, 0, Mathf.Floor(targetPoint.z) + 0.5f);
                     Quaternion targetRotation = Quaternion.LookRotation(targetPoint - playerTransform.position);
                     playerTransform.rotation = targetRotation;
                     if (instantiatedPointer != null)
@@ -100,35 +105,44 @@ public class PlayerMovement : MonoBehaviour
                         DestroyObject(instantiatedPointer);
                     }
                     instantiatedPointer = Instantiate(pointer, destinationPosition, Quaternion.identity) as GameObject;
+
+                    Move();
                 }
             }
 
-            previousMove = 0;   
+            previousMove = 0;
+        }
+    }
+
+    private void Move()
+    {
+        List<MapPosition> path = activeGrid.FindPath(destinationPosition);
+        
+        while (path != null && path.Count > 0)
+        {
+            Vector3 movePosition = new Vector3(path[path.Count - 1].xPos + 0.5f, 0.0f, path[path.Count - 1].yPos + 0.5f);
+            Debug.Log("Path list :" + path[path.Count - 1].ToString() + ", Index Count: " + path.Count);
+            player.transform.position = movePosition;
+            path.RemoveAt(path.Count - 1);
+            //yield return new WaitForSeconds(0.2f);
         }
 
-        if (destinationDistance > .01f)
-        {
-            playerTransform.position = Vector3.MoveTowards(playerTransform.position, destinationPosition, moveSpeed * Time.deltaTime);
-        }
+        activeGrid.ClearPath();
     }
 
     private void FollowPlayer()
     {
         previousCast += Time.deltaTime;
-        //ok so i need to check my current destination with what it just was. If the destination is more than one it should to a check. Might be kind of tricky because the player never mooves one FULL unit but rather a tiny fraction less.
 
         if (destinationDistance < remainingDistance - 0.95f)
         {
             remainingDistance = destinationDistance;
-
             raycastObscure = true;
         }
         else
         {
             raycastObscure = false;
         }
-
-        //slowed down the raycasting to save on some CPU. It only casts once every half second instead of as fast as it updates.
 
         if (raycastObscure)
         {
@@ -138,13 +152,14 @@ public class PlayerMovement : MonoBehaviour
 
     public void ClearRoomList()
     {
-        doors.Clear();
-        obscureList.Clear();
-        obscureMatList.Clear();
+        activeGrid.ClearPath();
+        //activeGrid.nodeMap = null;
+        doors.RemoveRange(0, doors.Count);
     }
 
     public void ResetPosition(Vector3 position)
     {
         destinationPosition = new Vector3(Mathf.Floor(position.x) + 0.5f, 0.0f, Mathf.Floor(position.z) + 0.5f);
+        player.transform.position = destinationPosition;
     }
 }

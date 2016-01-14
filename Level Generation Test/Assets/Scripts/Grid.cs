@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof (MeshFilter), typeof (MeshRenderer), typeof (BoxCollider))]
-public class Grid : MonoBehaviour {
+public class Grid : MonoBehaviour
+{
 
     private Material floorMaterial, waterMaterial;
     public int xSize, zSize;
@@ -13,18 +14,197 @@ public class Grid : MonoBehaviour {
     private Mesh meshFloor, meshWallsBack, meshWallsFront;
 
     public List<GameObject> doors;
+    public List<MapPosition> path;
 
     public GameObject floorObject;
+    public AStarNode currentNode, goal;
 
-    private void Awake()
+    public GameObject player;
+
+    public static int WALL = 0;
+    public static int FLOOR = 1;
+    public static int START = 2;
+    public static int GOAL = 3;
+
+    int[,] map;
+
+    public AStarNode[,] nodeMap;
+
+    List<AStarNode> closed = new List<AStarNode>();
+    List<AStarNode> open = new List<AStarNode>();
+
+    private void Start()
     {
         gameObject.isStatic = true;
         floorObject = this.gameObject;
+        player = Camera.main.GetComponent<PlayerMovement>().player;
         Generate();
+        GenerateAStarPath();
+        Debug.Log("NEW NODEMAP LENGTH: " + nodeMap.Length);
+    }
+
+    private void GenerateAStarPath()
+    {
+        Debug.Log("GENERATING ASTARTMAP");
+        map = new int[xSize, zSize];
+
+        for (int x = 0, i = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < zSize; y++, i++)
+            {
+                Debug.Log("MAP X" + x + ", MAP Y" + y + ", MAP COUNT: " + i);
+                map[x, y] = FLOOR;
+            }
+        }
+
+        GenerateNodeMapFromIntMap();
+    }
+
+    private void GenerateNodeMapFromIntMap()
+    {
+        nodeMap = new AStarNode[xSize, zSize];
+
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < zSize; y++)
+            {
+                nodeMap[x, y] = new AStarNode(new MapPosition(x, y, map[x, y] > 0), 0f, 0f);
+            }
+        }
+    }
+
+    private List<MapPosition> FindPath(MapPosition start, MapPosition goal)
+    {
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < zSize; y++)
+            {
+                nodeMap[x, y].parent = null;
+            }
+        }
+
+        AStarNode startNode = nodeMap[start.xPos, start.yPos];
+        startNode.g = 0;
+        startNode.f = startNode.g + MapPosition.EucludianDistance(start, goal);
+        open.Add(startNode);
+
+        while (open.Count > 0)
+        {
+            AStarNode currentNode = open[0];
+
+            if (currentNode.position == goal)
+            {
+                path = new List<MapPosition>();
+
+                int count = 0;
+
+                while (currentNode.parent != null)
+                {
+                    count++;
+                    path.Add(currentNode.position);
+                    currentNode = nodeMap[currentNode.parent.xPos, currentNode.parent.yPos];
+                    Debug.Log(currentNode.position.xPos + ", " + currentNode.position.yPos);
+                    if (count > xSize * zSize * 6)
+                    {
+                        Debug.LogError("out of range");
+                        break;
+                    }
+                }
+                path.Add(start);
+                Debug.Log("Path length: " + path.Count);
+                return path;
+            }
+
+            open.RemoveAt(0);
+            closed.Add(currentNode);
+
+            List<AStarNode> neighbours = GetNeighbours(currentNode.position);
+
+            foreach (AStarNode neighbour in neighbours)
+            {
+                if (closed.Contains(neighbour))
+                {
+                    continue;
+                }
+
+                float g = currentNode.g + neighbour.f;
+
+                bool inOpenList = open.Contains(neighbour);
+                if (!inOpenList || g < neighbour.g)
+                {
+                    neighbour.parent = currentNode.position;
+                    neighbour.g = g;
+                    neighbour.f = g + MapPosition.EucludianDistance(neighbour.position, goal);
+
+                    if (!inOpenList)
+                    {
+                        int index = 0;
+                        while (index < open.Count && open[index].f < neighbour.f)
+                        {
+                            index++;
+                        }
+                        open.Insert(index, neighbour);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private List<AStarNode> GetNeighbours(MapPosition current)
+    {
+        List<AStarNode> neighbours = new List<AStarNode>();
+
+        if (current.yPos > 0 && map[current.xPos, current.yPos-1] == FLOOR && !closed.Contains(nodeMap[current.xPos, current.yPos - 1]))
+        {
+            neighbours.Add(nodeMap[current.xPos, current.yPos - 1]);
+        }
+
+        if (current.yPos < zSize - 1 && map[current.xPos, current.yPos + 1] == FLOOR && !closed.Contains(nodeMap[current.xPos, current.yPos + 1]))
+        {
+            neighbours.Add(nodeMap[current.xPos, current.yPos + 1]);
+        }
+
+        if (current.xPos > 0 && map[current.xPos - 1, current.yPos] == FLOOR && !closed.Contains(nodeMap[current.xPos - 1, current.yPos]))
+        {
+            neighbours.Add(nodeMap[current.xPos - 1, current.yPos]);
+        }
+
+        if (current.xPos < xSize - 1 && map[current.xPos + 1, current.yPos] == FLOOR && !closed.Contains(nodeMap[current.xPos + 1, current.yPos]))
+        {
+            neighbours.Add(nodeMap[current.xPos + 1, current.yPos]);
+        }
+
+        return neighbours;
     }
 
     private void Generate()
     {
+        GameObject front = new GameObject("front");
+        front.transform.parent = gameObject.transform;
+        front.layer = 2;
+        front.tag = "front";
+        front.AddComponent<Wall>();
+
+        GameObject back = new GameObject("back");
+        back.transform.parent = gameObject.transform;
+        back.layer = 2;
+        back.tag = "back";
+        back.AddComponent<Wall>();
+
+        GameObject down = new GameObject("down");
+        down.transform.parent = gameObject.transform;
+        down.layer = 2;
+        down.tag = "down";
+        down.AddComponent<Wall>();
+
+        GameObject left = new GameObject("left");
+        left.transform.parent = gameObject.transform;
+        left.layer = 2;
+        left.tag = "left";
+        left.AddComponent<Wall>();
+
         floorVerts = new Vector3[(xSize + 1) * (zSize + 1)];
 
         Vector2[] uvFloor = new Vector2[floorVerts.Length];
@@ -91,30 +271,63 @@ public class Grid : MonoBehaviour {
         water.transform.parent = gameObject.transform;
         water.tag = "water";
         water.AddComponent<Water>();
+    }
 
-        GameObject front = new GameObject("front");
-        front.transform.parent = gameObject.transform;
-        front.layer = 2;
-        front.tag = "front";
-        front.AddComponent<Wall>();
+    public void ClearPath()
+    {
+        if (path != null)
+        {
+            path.Clear();
+            Debug.Log("clearing path");
+        }
+        open.Clear();
+        closed.Clear();
+        Debug.Log("should clear open and closed");
 
-        GameObject back = new GameObject("back");
-        back.transform.parent = gameObject.transform;
-        back.layer = 2;
-        back.tag = "back";
-        back.AddComponent<Wall>();
+    }
 
-        GameObject down = new GameObject("down");
-        down.transform.parent = gameObject.transform;
-        down.layer = 2;
-        down.tag = "down";
-        down.AddComponent<Wall>();
+    public List<MapPosition> FindPath(Vector3 destination)
+    {
+        //if (nodeMap == null)
+        //{
+        //    GenerateAStarPath();
+        //}
 
-        GameObject left = new GameObject("left");
-        left.transform.parent = gameObject.transform;
-        left.layer = 2;
-        left.tag = "left";
-        left.AddComponent<Wall>();
+        currentNode = nodeMap[Mathf.FloorToInt(player.transform.position.x), Mathf.FloorToInt(player.transform.position.z)];
+
+        Debug.Log(currentNode.position.ToString());
+        //Debug.Log();
+        goal = nodeMap[Mathf.FloorToInt(destination.x), Mathf.FloorToInt(destination.z)];
+
+        Debug.Log(goal.position.ToString());
+
+        path = FindPath(currentNode.position, goal.position);
+
+        return path;
+    }
+
+    public void OccupySpots(List<Vector3> vectorList)
+    {
+        for (int i = 0; i < vectorList.Count; i++)
+        {
+            map[(int)vectorList[i].x, (int)vectorList[i].z] = WALL;
+        }
+    }
+
+    public void SetCurrentNode(Vector3 destination)
+    {
+        currentNode = nodeMap[Mathf.FloorToInt(destination.x), Mathf.FloorToInt(destination.z)];
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log(nodeMap.Length);
+        nodeMap = null;
+    }
+
+    private void Update()
+    {
+        
     }
 
     /*private void OnDrawGizmos()

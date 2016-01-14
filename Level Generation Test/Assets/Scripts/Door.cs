@@ -5,12 +5,13 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider))]
 public class Door : MonoBehaviour {
 
+    private static float TIMEWAIT = 3.0f;
     private int xSize, ySize, wallSize, gridX;
     private Wall wall;
     private Mesh mesh;
     public Vector3[] doorVerts;
-    public GameObject grid;
-    public GenerateContent generator;
+    public GameObject floor;
+    private Grid grid;
     public Material doorMaterial;
     private Vector2 materialScale;
     private Vector2[] uv;
@@ -20,14 +21,16 @@ public class Door : MonoBehaviour {
 
     void Awake()
     {
+        justTraveled = 0;
+        //Debug.Log("RUNNING START() IN DOOR.CS" + justTraveled);
         gameObject.isStatic = true;
         gameObject.transform.localPosition = Vector3.zero;
 
         GetComponent<BoxCollider>().isTrigger = true;
 
-        wall = GetComponentInParent<Wall>();
-        grid = wall.floorObject;
-        generator = grid.GetComponent<GenerateContent>();
+        wall = transform.parent.GetComponent<Wall>();
+        floor = transform.parent.transform.parent.gameObject;
+        grid = floor.GetComponent<Grid>();
             
         playerInteraction = Camera.main.GetComponent<PlayerMovement>();
         
@@ -45,8 +48,6 @@ public class Door : MonoBehaviour {
         gridX = wall.xSize;
 
         Generate();
-
-        justTraveled = 0;
     }
 
     private void Generate()
@@ -88,7 +89,7 @@ public class Door : MonoBehaviour {
             }
         }
 
-        Vector3 colliderSize = new Vector3(xSize, ySize, 1);
+        Vector3 colliderSize = new Vector3((float)xSize / 2.0f, ySize, 0.5f);
         SetBoxCollider(colliderSize);
 
         mesh.vertices = doorVerts;
@@ -109,8 +110,9 @@ public class Door : MonoBehaviour {
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
-        playerInteraction.doors.Add(gameObject);
+        //playerInteraction.doors.Add(gameObject);
 
+        //grid.doors.Add(gameObject);
     }
 
     private void SetBoxCollider(Vector3 colliderSize)
@@ -133,7 +135,7 @@ public class Door : MonoBehaviour {
         {
             collider.center = new Vector3(doorVerts[0].x + (float)xSize / 2 - 0.01f, doorVerts[0].y + (float)ySize / 2, doorVerts[0].z + ((float)xSize / 2));
         }
-        generator.takenSpots.Add(collider.center);
+        //generator.takenSpots.Add(collider.center);
     }
 
     private void OnDrawGizmos()
@@ -144,126 +146,102 @@ public class Door : MonoBehaviour {
         }
 
         Gizmos.color = Color.black;
-        //for (int i = 0; i < doorVerts.Length; i++)
+        for (int i = 0; i < doorVerts.Length; i++)
         {
-            //Gizmos.DrawSphere(doorVerts[i], 0.1f);
+            Gizmos.DrawSphere(doorVerts[i], 0.1f);
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (tag == "front" && justTraveled > 5)
+        if (justTraveled > TIMEWAIT)
         {
             Debug.Log("TOUCHED DOOR: " + tag);
-
             Destroy(playerInteraction.activeFloor);
-            playerInteraction.activeFloor = null;
             playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
+            GameObject newFloor = Instantiate(floorGet(), Vector3.zero, Quaternion.identity) as GameObject;
+            List<GameObject> newDoorList = newFloor.GetComponent<Grid>().doors;
             playerInteraction.activeFloor = newFloor;
 
-            GameObject teleportDoor = null;
+            Debug.Log("CURRENT DOOR COUNT: " + newDoorList.Count);
 
-            for (int i = 0; i < playerInteraction.doors.Count; i++)
+            if (tag == "front")
             {
-                if (playerInteraction.doors[i].tag == "left")
+                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
+                for (int i = 0; i < newDoorList.Count - 1; i++)
                 {
-                    teleportDoor = playerInteraction.doors[i];
-                    break;
+                    if (grid.doors[i].tag == "left")
+                    {
+                        GameObject teleportDoor = grid.doors[i];
+                        Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
+                        playerInteraction.ResetPosition(teleportToDoor);
+                        
+                        break;
+                    }
                 }
             }
+            else if (tag == "back")
+            {
+                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
+                for (int i = 0; i < grid.doors.Count - 1; i++)
+                {
+                    if (grid.doors[i].tag == "down")
+                    {
+                        GameObject teleportDoor = grid.doors[i];
+                        Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
+                        playerInteraction.ResetPosition(teleportToDoor);
+                        
+                        break;
+                    }
+                }
+            }
+            else if (tag == "down")
+            {
+                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
+                for (int i = 0; i < grid.doors.Count - 1; i++)
+                {
+                    if (grid.doors[i].tag == "back")
+                    {
+                        GameObject teleportDoor = grid.doors[i];
+                        Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(-0.5f, 0.0f, -0.5f);
+                        playerInteraction.ResetPosition(teleportToDoor);
 
-            Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
-            playerInteraction.player.transform.position = teleportToDoor;
-            playerInteraction.ResetPosition(teleportToDoor);
+                        break;
+                    }
+                }
+            }
+            else if (tag == "left")
+            {
+                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
+                for (int i = 0; i < grid.doors.Count - 1; i++)
+                {
+                    Debug.Log("CHECKING FOR NEW DOOR: " + i);
+                    if (grid.doors[i].tag == "front")
+                    {
+                        Debug.Log("ATTEMPTING TO SET TELEPORT DOOR :" + i);
+                        GameObject teleportDoor = grid.doors[i];
+                        Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(-0.5f, 0.0f, 0.5f);
+                        playerInteraction.ResetPosition(teleportToDoor);
+                        
+                        break;
+                    }
+                }
+            }
             justTraveled = 0;
-        }
-        else if (tag == "back" && justTraveled > 5)
-        {
-            Debug.Log("TOUCHED DOOR: " + tag);
-
-            Destroy(playerInteraction.activeFloor);
-            playerInteraction.activeFloor = null;
-            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
-            playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
-            playerInteraction.activeFloor = newFloor;
-
-            GameObject teleportDoor = null;
-
-            for (int i = 0; i < playerInteraction.doors.Count; i++)
-            {
-                if (playerInteraction.doors[i].tag == "down")
-                {
-                    teleportDoor = playerInteraction.doors[i];
-                    break;
-                }
-            }
-
-            Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, 0.5f);
-            playerInteraction.player.transform.position = teleportToDoor;
-            playerInteraction.ResetPosition(teleportToDoor);
-            justTraveled = 0;
-        }
-        else if (tag == "down" && justTraveled > 5)
-        {
-            Debug.Log("TOUCHED DOOR: " + tag);
-
-            Destroy(playerInteraction.activeFloor);
-            playerInteraction.activeFloor = null;
-            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
-            playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
-            playerInteraction.activeFloor = newFloor;
-
-            GameObject teleportDoor = null;
-
-            for (int i = 0; i < playerInteraction.doors.Count; i++)
-            {
-                if (playerInteraction.doors[i].tag == "back")
-                {
-                    teleportDoor = playerInteraction.doors[i];
-                    break;
-                }
-            }
-
-            Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(0.5f, 0.0f, -0.5f);
-            playerInteraction.player.transform.position = teleportToDoor;
-            playerInteraction.ResetPosition(teleportToDoor);
-            justTraveled = 0;
-        }
-        else if (tag == "left" && justTraveled > 5)
-        {
-            Debug.Log("TOUCHED DOOR: " + tag);
-
-            Destroy(playerInteraction.activeFloor);
-            playerInteraction.activeFloor = null;
-            playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
-            playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count)], Vector3.zero, Quaternion.identity) as GameObject;
-            playerInteraction.activeFloor = newFloor;
-
-            GameObject teleportDoor = null;
-
-            for (int i = 0; i < playerInteraction.doors.Count; i++)
-            {
-                if (playerInteraction.doors[i].tag == "front")
-                {
-                    teleportDoor = playerInteraction.doors[i];
-                    break;
-                }
-            }
-
-            Vector3 teleportToDoor = teleportDoor.GetComponent<Door>().doorVerts[0] + new Vector3(-0.5f, 0.0f, 0.5f);
-            playerInteraction.player.transform.position = teleportToDoor;
-            playerInteraction.ResetPosition(teleportToDoor);
         }
     }
 
     void Update()
     {
         justTraveled += Time.deltaTime;
+    }
+
+    private GameObject floorGet()
+    {
+        GameObject pickedFloor = playerInteraction.floors[Random.Range(0, playerInteraction.floors.Count - 1)];
+
+        return pickedFloor;
     }
     
 }

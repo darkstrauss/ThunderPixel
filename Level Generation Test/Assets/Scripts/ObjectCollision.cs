@@ -2,62 +2,35 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ObjectCollision : MonoBehaviour {
+public class ObjectCollision : MonoBehaviour
+{
 
-    private PlayerMovement movement;
-    private GameObject mainCamera;
     public Material seeThroughMat;
     public GameObject previousHit;
     public bool isTouchingDown, isTouchingRight;
     public List<GameObject> obscureListDown, obscureListRight;
     public List<Material> obscureMatListDown, obscureMatListRight;
-    private float destinationDistance, remainingDistance;
+    private float remainingDistance;
 
     void Start()
     {
-        mainCamera = Camera.main.gameObject;
-        movement = mainCamera.GetComponent<PlayerMovement>();
         previousHit = gameObject;
         isTouchingDown = false;
         isTouchingRight = false;
-        destinationDistance = 0;
         remainingDistance = 0;
-    }
-
-	private void Update()
-    {
-        
     }
 
     public void CollisionDetection()
     {
         RaycastHit hit;
-        Ray rayForward = new Ray(transform.position, Vector3.forward);
         Ray rayBack = new Ray(transform.position, Vector3.back);
-        Ray rayLeft = new Ray(transform.position, Vector3.left);
         Ray rayRight = new Ray(transform.position, Vector3.right);
-
-        if (Physics.Raycast(rayForward, out hit))
-        {
-            if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
-            {
-                //movement.ResetPosition(transform.position);
-                Destroy(Camera.main.GetComponent<PlayerMovement>().instantiatedPointer);
-                Debug.Log("OBJECT IN CLOSE VACINITY FRONT: " + hit.distance + ", " + hit.collider.name);
-            }
-
-            Debug.DrawRay(rayForward.origin, rayForward.direction);
-        }
 
         if (Physics.Raycast(rayBack, out hit))
         {
             if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
             {
                 isTouchingDown = true;
-                //movement.ResetPosition(transform.position);
-                Destroy(Camera.main.GetComponent<PlayerMovement>().instantiatedPointer);
-                Debug.Log("OBJECT IN CLOSE VACINITY BACK: " + hit.distance + ", " + hit.collider.name);
-                //need to cast from this hit object to the left and right and add those hit objects to the list as well
                 RayCastFromHitObjectDown(hit.collider.gameObject);
                 AddToList(hit.collider.gameObject, "Down");
             }
@@ -75,27 +48,11 @@ public class ObjectCollision : MonoBehaviour {
             ClearList();
         }
 
-        if (Physics.Raycast(rayLeft, out hit))
-        {
-            if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
-            {
-                //movement.ResetPosition(transform.position);
-                Destroy(Camera.main.GetComponent<PlayerMovement>().instantiatedPointer);
-                Debug.Log("OBJECT IN CLOSE VACINITY LEFT: " + hit.distance + ", " + hit.collider.name);
-            }
-
-            Debug.DrawRay(rayLeft.origin, rayLeft.direction);
-        }
-
         if (Physics.Raycast(rayRight, out hit))
         {
             if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
             {
                 isTouchingRight = true;
-                //movement.ResetPosition(transform.position);
-                Destroy(Camera.main.GetComponent<PlayerMovement>().instantiatedPointer);
-                Debug.Log("OBJECT IN CLOSE VACINITY RIGHT: " + hit.distance + ", " + hit.collider.name);
-                //same as earlier only the axies change. Need to cast from the hit object up and down.
                 RayCastFromHitObjectRight(hit.collider.gameObject);
                 AddToList(hit.collider.gameObject, "Right");
             }
@@ -124,11 +81,6 @@ public class ObjectCollision : MonoBehaviour {
                 obscureMatListDown.Add(addThis.GetComponent<MeshRenderer>().material);
                 addThis.GetComponent<MeshRenderer>().material = seeThroughMat;
             }
-            else
-            {
-                //nothing
-                Debug.Log("ALREADY IN LIST");
-            }
         }
 
         if (direction == "Right")
@@ -138,11 +90,6 @@ public class ObjectCollision : MonoBehaviour {
                 obscureListRight.Add(addThis);
                 obscureMatListRight.Add(addThis.GetComponent<MeshRenderer>().material);
                 addThis.GetComponent<MeshRenderer>().material = seeThroughMat;
-            }
-            else
-            {
-                //nothing
-                Debug.Log("ALREADY IN LIST");
             }
         }
     }
@@ -209,7 +156,6 @@ public class ObjectCollision : MonoBehaviour {
             for (int i = 0; i < obscureListDown.Count; i++)
             {
                 obscureListDown[i].GetComponent<Renderer>().material = obscureMatListDown[i];
-                //obscureList[i].layer = 0;
             }
             obscureListDown.Clear();
             obscureMatListDown.Clear();
@@ -219,7 +165,6 @@ public class ObjectCollision : MonoBehaviour {
             for (int i = 0; i < obscureListRight.Count; i++)
             {
                 obscureListRight[i].GetComponent<Renderer>().material = obscureMatListRight[i];
-                //obscureList[i].layer = 0;
             }
             obscureListRight.Clear();
             obscureMatListRight.Clear();
@@ -228,22 +173,6 @@ public class ObjectCollision : MonoBehaviour {
 
     public void ForceClearList()
     {
-        if (obscureListDown.Count > 0)
-        {
-            for (int i = 0; i < obscureListDown.Count; i++)
-            {
-                obscureListDown[i].GetComponent<Renderer>().material = obscureMatListDown[i];
-                //obscureList[i].layer = 0;
-            }
-        }
-        else if (obscureListRight.Count > 0)
-        {
-            for (int i = 0; i < obscureListRight.Count; i++)
-            {
-                obscureListRight[i].GetComponent<Renderer>().material = obscureMatListRight[i];
-            }
-        }
-
         isTouchingRight = false;
         isTouchingDown = false;
         previousHit = gameObject;

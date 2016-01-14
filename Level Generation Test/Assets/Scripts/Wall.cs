@@ -28,10 +28,8 @@ public class Wall : MonoBehaviour {
         xSize = GetComponentInParent<Grid>().xSize;
         zSize = GetComponentInParent<Grid>().zSize;
         gridX = xSize;
-        floorGrid = GetComponentInParent<Grid>();
-
-        floorObject = floorGrid.floorObject;
-
+        floorObject = transform.parent.gameObject;
+        floorGrid = floorObject.GetComponent<Grid>();
         direction = gameObject.name;
 
         wallMat = Resources.Load<Material>("Materials/wall");
@@ -140,6 +138,7 @@ public class Wall : MonoBehaviour {
         door.tag = gameObject.name;
         door.transform.parent = gameObject.transform;
         door.AddComponent<Door>();
+        floorGrid.doors.Add(door);
     }
 
     private void SetBoxCollider(Vector3 colliderSize)
