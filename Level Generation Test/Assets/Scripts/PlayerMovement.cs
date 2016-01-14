@@ -57,9 +57,9 @@ public class PlayerMovement : MonoBehaviour
             moveSpeed = 0;
             remainingDistance = 0;
             ResetPosition(player.transform.position);
-            if (activeGrid.path != null && activeGrid.path.Count > 0)
+            if (activeFloor.GetComponent<Grid>().path != null && activeFloor.GetComponent<Grid>().path.Count > 0)
             {
-                activeGrid.ClearPath();
+                activeFloor.GetComponent<Grid>().ClearPath();
             }
             
             Destroy(instantiatedPointer);
@@ -98,15 +98,13 @@ public class PlayerMovement : MonoBehaviour
                     player.GetComponent<ObjectCollision>().CollisionDetection();
                     Vector3 targetPoint = hit.point;
                     destinationPosition = new Vector3(Mathf.Floor(targetPoint.x) + 0.5f, 0, Mathf.Floor(targetPoint.z) + 0.5f);
-                    Quaternion targetRotation = Quaternion.LookRotation(targetPoint - playerTransform.position);
-                    playerTransform.rotation = targetRotation;
                     if (instantiatedPointer != null)
                     {
                         DestroyObject(instantiatedPointer);
                     }
                     instantiatedPointer = Instantiate(pointer, destinationPosition, Quaternion.identity) as GameObject;
 
-                    Move();
+                    StartCoroutine(Move());
                 }
             }
 
@@ -114,20 +112,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Move()
+    private IEnumerator Move()
     {
-        List<MapPosition> path = activeGrid.FindPath(destinationPosition);
+        List<MapPosition> path = activeFloor.GetComponent<Grid>().FindPath(destinationPosition);
         
         while (path != null && path.Count > 0)
         {
             Vector3 movePosition = new Vector3(path[path.Count - 1].xPos + 0.5f, 0.0f, path[path.Count - 1].yPos + 0.5f);
             Debug.Log("Path list :" + path[path.Count - 1].ToString() + ", Index Count: " + path.Count);
+            Quaternion targetRotation = Quaternion.LookRotation(movePosition - playerTransform.position);
+            playerTransform.rotation = targetRotation;
             player.transform.position = movePosition;
             path.RemoveAt(path.Count - 1);
-            //yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.3f);
         }
 
-        activeGrid.ClearPath();
+        activeFloor.GetComponent<Grid>().ClearPath();
     }
 
     private void FollowPlayer()
@@ -152,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ClearRoomList()
     {
-        activeGrid.ClearPath();
+        activeFloor.GetComponent<Grid>().ClearPath();
         //activeGrid.nodeMap = null;
         doors.RemoveRange(0, doors.Count);
     }

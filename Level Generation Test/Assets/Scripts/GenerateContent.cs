@@ -48,7 +48,6 @@ public class GenerateContent : MonoBehaviour
             int selection = Random.Range(0, availibleGameObjects.Count - 1);
 
             GameObject temp = Instantiate(availibleGameObjects[selection], Vector3.zero, Quaternion.identity) as GameObject;
-            takenSpots.Add(temp.transform.position);
             temp.transform.parent = gameObject.transform;
             temp.name = "" + amountOfItems;
             temp.isStatic = true;
@@ -93,8 +92,8 @@ public class GenerateContent : MonoBehaviour
             
             lastSelection = selection;
             amountOfItems--;
-
-            if (amountOfItems == 0)
+            takenSpots.Add(temp.transform.position);
+            if (amountOfItems == 1)
             {
                 grid.OccupySpots(takenSpots);
             }
