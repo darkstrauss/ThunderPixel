@@ -4,19 +4,45 @@ using System.Collections;
 public class CombatSystem : MonoBehaviour {
 
     public float dTime;
+    public int Health;
+    public GameObject DodgeCircleL, DodgeCircleR;
+    public GameObject ActiveEnemy;
 
-    public GameObject DodgeCircleL;
-    public GameObject DodgeCircleR;
-    
-	// Use this for initialization
-	void Start () {
-	
+    private IEnumerator coroutine1, coroutine2;
+
+    // Use this for initialization
+    void Start () {
+        Health = 100;
+
+        ResetCo();
+    }
+
+    void OnEnable()
+    {
+        // Pause game
+        // Update avaiblibe strikes
+    }
+
+    // Update is called once per frame
+    void Update () {
+
+        
+        // check health
+        // if health reach zero gameover
+        // check stamina
+
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    public void StartComabt()
+    {
+        // pause game
+    }
+    private void ResetCo()
+    {
+        coroutine1 = DodgeVisualIE(dTime, DodgeCircleL);
+        coroutine2 = DodgeVisualIE(dTime, DodgeCircleR);
+    }
+
 
     public void IncomingAttack()
     {
@@ -26,31 +52,54 @@ public class CombatSystem : MonoBehaviour {
         DodgeCircleL.SetActive(true);
         DodgeCircleR.SetActive(true);
 
-        StartCoroutine(DodgeVisualIE(dTime, DodgeCircleL));
-        StartCoroutine(DodgeVisualIE(dTime, DodgeCircleR));
+        StartCoroutine(coroutine1);
+        StartCoroutine(coroutine2);
     }
 
+    // Used to cancel coroutines and dodge incoming attack
     public void DodgeVisual()
     {
-        
+        StopCoroutine(coroutine1);
+        StopCoroutine(coroutine2);
+
+        DodgeCircleL.SetActive(false);
+        DodgeCircleR.SetActive(false);
+
+        ResetCo();
     }
+
+    // Function to interact with health
+    public void HealthDown(int amountDOWN)
+    {
+        Health -= amountDOWN;
+    }
+
+    // Funchtion to increase health
+    public void HealthUp (int amountUP)
+    {
+        Health += amountUP;
+    }
+
+    // Dislpay game over screen + score etc
+    private void GameOver()
+    {
+        // Display things 
+    } 
 
     IEnumerator DodgeVisualIE(float time, GameObject rORl)
     {
-        Vector3 originalScaleL = rORl.transform.localScale;
+        Vector3 originalScale = rORl.transform.localScale;
         Vector3 destinationScale = new Vector3(1.5f, 1.5f, 1.5f);
-
-        //t = t * t * (3f - 2f * t);
 
         float currentTime = 0.0f;
 
         while(currentTime <= time)
         {
-            rORl.transform.localScale = Vector3.Lerp(rORl.transform.localScale, destinationScale ,  Mathf.SmoothStep(0, 1 ,(currentTime / time)));
+            rORl.transform.localScale = Vector3.Lerp(originalScale, destinationScale ,  Mathf.SmoothStep(0, 1 ,(currentTime / time)));
             currentTime += Time.deltaTime;
             yield return null;
         }
         rORl.SetActive(false);
-       
+        HealthDown(10);   
     }
 }
