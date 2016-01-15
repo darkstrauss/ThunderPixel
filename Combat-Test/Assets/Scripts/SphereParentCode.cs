@@ -38,6 +38,9 @@ public class SphereParentCode : MonoBehaviour
     public GameObject Button8;
     public GameObject Button9;
 
+    public GameObject ApCircleL;
+    public GameObject ApCircleR;
+
     private List<GameObject> Buttons = new List<GameObject>();
 
 
@@ -267,6 +270,12 @@ public class SphereParentCode : MonoBehaviour
     public void OutputFun ()
     {
 
+    }
+
+    public void Dodge()
+    {
+        //ApCircleL.transform.localScale = new Vector3(1f, 1f, 1f);
+        
     }
 
     IEnumerator WaitForStrike()
