@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class ObjectCollision : MonoBehaviour
 {
-
+    private static float HITDISTANCE = 0.6f;
     public Material seeThroughMat;
     public GameObject previousHit;
     public bool isTouchingDown, isTouchingRight;
@@ -28,7 +28,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayBack, out hit))
         {
-            if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
+            if (hit.distance < HITDISTANCE && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
             {
                 isTouchingDown = true;
                 RayCastFromHitObjectDown(hit.collider.gameObject);
@@ -50,7 +50,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayRight, out hit))
         {
-            if (hit.distance < 0.51f && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
+            if (hit.distance < HITDISTANCE && hit.collider.name != "ThirdPersonController" && hit.collider.tag != "floor")
             {
                 isTouchingRight = true;
                 RayCastFromHitObjectRight(hit.collider.gameObject);
@@ -109,7 +109,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayLeft, out hit))
         {
-            if (hit.distance < 0.51f)
+            if (hit.distance < HITDISTANCE)
             {
                 AddToList(hit.collider.gameObject, "Down");
             } 
@@ -117,7 +117,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayRight, out hit))
         {
-            if (hit.distance < 0.51f)
+            if (hit.distance < HITDISTANCE)
             {
                 AddToList(hit.collider.gameObject, "Down");
             }
@@ -134,7 +134,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayUp, out hit))
         {
-            if (hit.distance < 0.51f)
+            if (hit.distance < HITDISTANCE)
             {
                 AddToList(hit.collider.gameObject, "Right");
             }
@@ -142,7 +142,7 @@ public class ObjectCollision : MonoBehaviour
 
         if (Physics.Raycast(rayDown, out hit))
         {
-            if (hit.distance < 0.51f)
+            if (hit.distance < HITDISTANCE)
             {
                 AddToList(hit.collider.gameObject, "Right");
             }

@@ -26,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
         mainCamera = Camera.main;
         playerTransform = player.transform;
         destinationPosition = playerTransform.position;
-        activeFloor = GameObject.FindGameObjectWithTag("floor");
-        activeGrid = activeFloor.GetComponent<Grid>();
+        //activeFloor = GameObject.FindGameObjectWithTag("floor");
+        //activeGrid = activeFloor.GetComponent<Grid>();
         previousCast = 0;
         raycastObscure = false;
         previousHit = gameObject;
@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
             moveSpeed = 0;
             remainingDistance = 0;
             ResetPosition(player.transform.position);
-            if (activeFloor.GetComponent<Grid>().path != null && activeFloor.GetComponent<Grid>().path.Count > 0)
+            if (activeFloor != null && activeFloor.GetComponent<Grid>().path != null && activeFloor.GetComponent<Grid>().path.Count > 0)
             {
                 activeFloor.GetComponent<Grid>().ClearPath();
             }
@@ -114,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Move()
     {
-        List<MapPosition> path = activeFloor.GetComponent<Grid>().FindPath(destinationPosition);
+        List<MapPosition> path = GetFloor().FindPath(destinationPosition);
         
         while (path != null && path.Count > 0)
         {
@@ -127,7 +127,7 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
         }
 
-        activeFloor.GetComponent<Grid>().ClearPath();
+        //activeFloor.GetComponent<Grid>().ClearPath();
     }
 
     private void FollowPlayer()
@@ -152,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ClearRoomList()
     {
-        activeFloor.GetComponent<Grid>().ClearPath();
+        GetFloor().ClearPath();
         //activeGrid.nodeMap = null;
         doors.RemoveRange(0, doors.Count);
     }
@@ -161,5 +161,11 @@ public class PlayerMovement : MonoBehaviour
     {
         destinationPosition = new Vector3(Mathf.Floor(position.x) + 0.5f, 0.0f, Mathf.Floor(position.z) + 0.5f);
         player.transform.position = destinationPosition;
+    }
+
+    private Grid GetFloor()
+    {
+        Grid floor = GameObject.FindGameObjectWithTag("floor").GetComponent<Grid>();
+        return floor;
     }
 }

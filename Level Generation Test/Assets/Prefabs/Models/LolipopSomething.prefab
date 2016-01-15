@@ -25,6 +25,7 @@ GameObject:
   - 4: {fileID: 469712}
   - 33: {fileID: 3375104}
   - 23: {fileID: 2341550}
+  - 65: {fileID: 6557112}
   m_Layer: 0
   m_Name: Cylinder001
   m_TagString: Untagged
@@ -42,6 +43,7 @@ GameObject:
   - 4: {fileID: 489626}
   - 33: {fileID: 3325838}
   - 23: {fileID: 2351346}
+  - 65: {fileID: 6549870}
   m_Layer: 0
   m_Name: Cylinder001
   m_TagString: Untagged
@@ -74,6 +76,7 @@ GameObject:
   - 4: {fileID: 471834}
   - 33: {fileID: 3371358}
   - 23: {fileID: 2373900}
+  - 65: {fileID: 6580986}
   m_Layer: 0
   m_Name: Cylinder001
   m_TagString: Untagged
@@ -193,7 +196,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 123276}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 7.33604288, y: .994556904, z: 1.52933884}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 419670}
@@ -300,6 +303,42 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 148260}
   m_Mesh: {fileID: 4300000, guid: 552e44635d0b3434e9cd0a5462277d2a, type: 3}
+--- !u!65 &6549870
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 162202}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.43291986, y: .179846391, z: .157480046}
+  m_Center: {x: 1.47458913e-05, y: .0899277776, z: 2.7247328e-05}
+--- !u!65 &6557112
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 148260}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.43291998, y: .136991501, z: .157480001}
+  m_Center: {x: 1.78813934e-07, y: .0685007572, z: 2.98023224e-08}
+--- !u!65 &6580986
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 168460}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.4329201, y: .202414125, z: .157480046}
+  m_Center: {x: -6.67415179e-07, y: .101212412, z: 1.04286023e-07}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

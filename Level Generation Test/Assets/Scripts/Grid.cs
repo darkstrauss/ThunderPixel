@@ -33,11 +33,12 @@ public class Grid : MonoBehaviour
     List<AStarNode> closed = new List<AStarNode>();
     List<AStarNode> open = new List<AStarNode>();
 
-    private void Start()
+    private void Awake()
     {
         gameObject.isStatic = true;
         floorObject = this.gameObject;
         player = Camera.main.GetComponent<PlayerMovement>().player;
+        Camera.main.GetComponent<PlayerMovement>().activeFloor = this.gameObject;
         Generate();
         GenerateAStarPath();
         Debug.Log("NEW NODEMAP LENGTH: " + nodeMap.Length);
@@ -52,7 +53,7 @@ public class Grid : MonoBehaviour
         {
             for (int y = 0; y < zSize; y++, i++)
             {
-                Debug.Log("MAP X" + x + ", MAP Y" + y + ", MAP COUNT: " + i);
+                //Debug.Log("MAP X" + x + ", MAP Y" + y + ", MAP COUNT: " + i);
                 map[x, y] = FLOOR;
             }
         }
@@ -152,7 +153,7 @@ public class Grid : MonoBehaviour
         return null;
     }
 
-    private List<AStarNode> GetNeighbours(MapPosition current)
+    public List<AStarNode> GetNeighbours(MapPosition current)
     {
         List<AStarNode> neighbours = new List<AStarNode>();
 
@@ -186,24 +187,48 @@ public class Grid : MonoBehaviour
         front.layer = 2;
         front.tag = "front";
         front.AddComponent<Wall>();
+        GameObject doorFront = new GameObject("door");
+        doorFront.layer = 2;
+        doorFront.tag = "front";
+        doorFront.transform.parent = front.transform;
+        doorFront.AddComponent<Door>();
+        doors.Add(doorFront);
 
         GameObject back = new GameObject("back");
         back.transform.parent = gameObject.transform;
         back.layer = 2;
         back.tag = "back";
         back.AddComponent<Wall>();
+        GameObject doorBack = new GameObject("door");
+        doorBack.layer = 2;
+        doorBack.tag = "back";
+        doorBack.transform.parent = back.transform;
+        doorBack.AddComponent<Door>();
+        doors.Add(doorBack);
 
         GameObject down = new GameObject("down");
         down.transform.parent = gameObject.transform;
         down.layer = 2;
         down.tag = "down";
         down.AddComponent<Wall>();
+        GameObject doorDown = new GameObject("door");
+        doorDown.layer = 2;
+        doorDown.tag = "down";
+        doorDown.transform.parent = down.transform;
+        doorDown.AddComponent<Door>();
+        doors.Add(doorDown);
 
         GameObject left = new GameObject("left");
         left.transform.parent = gameObject.transform;
         left.layer = 2;
         left.tag = "left";
         left.AddComponent<Wall>();
+        GameObject doorLeft = new GameObject("door");
+        doorLeft.layer = 2;
+        doorLeft.tag = "left";
+        doorLeft.transform.parent = left.transform;
+        doorLeft.AddComponent<Door>();
+        doors.Add(doorLeft);
 
         floorVerts = new Vector3[(xSize + 1) * (zSize + 1)];
 
@@ -220,14 +245,6 @@ public class Grid : MonoBehaviour
                 uvFloor[i] = new Vector2((float)x / xSize, (float)y / zSize);
             }
         }
-
-        //floorVerts[50].y = -0.5f;
-        //floorVerts[51].y = -0.5f;
-        //floorVerts[50 + xSize + 1].y = -0.5f;
-        //floorVerts[51 + xSize + 1].y = -0.5f;
-
-        //floorVerts[50 + xSize].y = -0.5f;
-        //floorVerts[51 + xSize].y = -0.5f;
 
         GetComponent<MeshFilter>().mesh = meshFloor = new Mesh();
         meshFloor.name = "Generated Floor Mesh";
@@ -278,29 +295,22 @@ public class Grid : MonoBehaviour
         if (path != null)
         {
             path.Clear();
-            Debug.Log("clearing path");
         }
         open.Clear();
         closed.Clear();
-        Debug.Log("should clear open and closed");
-
     }
 
     public List<MapPosition> FindPath(Vector3 destination)
     {
-        //if (nodeMap == null)
-        //{
-        //    GenerateAStarPath();
-        //}
+        if (path != null && path.Count > 0)
+        {
+            path.Clear();
+        }
+        closed.Clear();
+        open.Clear();
 
         currentNode = nodeMap[Mathf.FloorToInt(player.transform.position.x), Mathf.FloorToInt(player.transform.position.z)];
-
-        Debug.Log(currentNode.position.ToString());
-        //Debug.Log();
         goal = nodeMap[Mathf.FloorToInt(destination.x), Mathf.FloorToInt(destination.z)];
-
-        Debug.Log(goal.position.ToString());
-
         path = FindPath(currentNode.position, goal.position);
 
         return path;
@@ -321,13 +331,17 @@ public class Grid : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log(nodeMap.Length);
         nodeMap = null;
     }
 
     private void Update()
     {
         
+    }
+
+    public List<GameObject> GetDoors()
+    {
+        return doors;
     }
 
     /*private void OnDrawGizmos()

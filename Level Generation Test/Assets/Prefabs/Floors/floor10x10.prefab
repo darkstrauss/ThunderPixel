@@ -89,15 +89,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availibleGameObjects:
-  - {fileID: 105568, guid: f0394b70ee0228148aa5675ce2d3e65e, type: 2}
-  - {fileID: 177320, guid: 14cbb30c3cceb644ab17defebcbda917, type: 2}
-  - {fileID: 102916, guid: f99623b3be544b74abf09b503a695921, type: 2}
-  - {fileID: 176276, guid: 8ee9dd882dec85c4491fb1c9da278a58, type: 2}
-  - {fileID: 107330, guid: eafa44f64d7a0ca41b6824570a5b4e69, type: 2}
-  - {fileID: 106792, guid: ee4bfcc0a6f3a4944ab15a4d3c99d2fd, type: 2}
+  - {fileID: 152550, guid: 138bcfa31a081ad43b35d125ac31d493, type: 2}
+  - {fileID: 122152, guid: b7f5e37ab1b058b4d9fb3d4d53274710, type: 2}
+  - {fileID: 167412, guid: 69a68a6ba8afa9f41b1ea99d7b4ea49f, type: 2}
+  - {fileID: 139190, guid: a6a44e7323e23874bba9cfa4a45dd785, type: 2}
+  - {fileID: 123276, guid: 9396b53cda74b094c84dbaf6fcb89590, type: 2}
+  - {fileID: 162938, guid: aa0e19d4309f8864a88f928732addcbd, type: 2}
+  - {fileID: 178052, guid: 6161045a74414ad4b90ebe415f80b401, type: 2}
+  - {fileID: 157822, guid: c866df46e55ea184a8bd482b0976d8ba, type: 2}
   takenSpots: []
   text: {fileID: 0}
-  amountOfItems: 0
+  amountOfItems: 5
   SEED: 0
 --- !u!114 &11466674
 MonoBehaviour:

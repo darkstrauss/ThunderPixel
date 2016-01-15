@@ -10,6 +10,7 @@ GameObject:
   - 4: {fileID: 400618}
   - 33: {fileID: 3317522}
   - 23: {fileID: 2334060}
+  - 65: {fileID: 6583184}
   m_Layer: 0
   m_Name: GumballDispenser
   m_TagString: Untagged
@@ -40,7 +41,7 @@ Transform:
   m_GameObject: {fileID: 143908}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: .899999976, y: .899999976, z: .899999976}
   m_Children: []
   m_Father: {fileID: 496810}
   m_RootOrder: 0
@@ -51,7 +52,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 167412}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -1.62920685e-07}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 16.2102165, y: 2.16877556, z: .987512827}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400618}
@@ -90,6 +91,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 143908}
   m_Mesh: {fileID: 4300000, guid: 78fc27c7c7aec574c9b067c8026d0878, type: 3}
+--- !u!65 &6583184
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 143908}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.60855997, y: .116114557, z: 1.67180002}
+  m_Center: {x: 0, y: .0580572784, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

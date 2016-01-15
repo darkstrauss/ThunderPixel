@@ -132,13 +132,6 @@ public class Wall : MonoBehaviour {
 
         PlaceWallStructures(direction);
         PlaceTrees(direction);
-
-        GameObject door = new GameObject("door");
-        door.layer = 2;
-        door.tag = gameObject.name;
-        door.transform.parent = gameObject.transform;
-        door.AddComponent<Door>();
-        floorGrid.doors.Add(door);
     }
 
     private void SetBoxCollider(Vector3 colliderSize)
