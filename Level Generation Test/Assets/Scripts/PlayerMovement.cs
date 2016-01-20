@@ -161,15 +161,13 @@ public class PlayerMovement : MonoBehaviour
             Destroy(floorTiles[floorTiles.Count - 1]);
             floorTiles.RemoveAt(floorTiles.Count - 1);
 
-            if (path.Count > 0)
-            {
-                
-                path.RemoveAt(path.Count - 1);
-            }
-
             if (path.Count == 0)
             {
                 process = false;
+            }
+            else
+            {
+                path.RemoveAt(path.Count - 1);
             }
         }
 
@@ -217,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
         player.transform.position = destinationPosition;
     }
 
-    private Grid GetFloor()
+    public Grid GetFloor()
     {
         return activeFloor.GetComponent<Grid>();
     }

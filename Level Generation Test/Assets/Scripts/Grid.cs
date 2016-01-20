@@ -27,7 +27,7 @@ public class Grid : MonoBehaviour
     public static int START = 2;
     public static int GOAL = 3;
 
-    int[,] map;
+    public int[,] map;
 
     public AStarNode[,] nodeMap;
 
