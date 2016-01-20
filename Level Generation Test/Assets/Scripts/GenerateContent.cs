@@ -10,7 +10,7 @@ public class GenerateContent : MonoBehaviour
     public Text text;
     private Grid grid;
     private int lastSelection = -1;
-    public int amountOfItems;
+    public int amountOfItems, amountOfEnemies;
     public int SEED;
     private bool placedFountain = false;
 
@@ -131,6 +131,14 @@ public class GenerateContent : MonoBehaviour
             }
 
             Generate();
+        }
+    }
+
+    private void GenerateEnemies()
+    {
+        if (amountOfEnemies > 0)
+        {
+
         }
     }
 

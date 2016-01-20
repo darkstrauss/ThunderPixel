@@ -12,6 +12,7 @@ TagManager:
   - MovementFloor
   - Text
   - water
+  - enemy
   layers:
   - Default
   - TransparentFX
