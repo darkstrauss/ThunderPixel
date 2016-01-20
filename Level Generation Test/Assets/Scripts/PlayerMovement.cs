@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public List<GameObject> doors;
     public List<GameObject> floorTiles;
     private Camera mainCamera;
-    public GameObject player, activeFloor, pointer, previousHit, floorTile;
+    public GameObject player, activeFloor, pointer, previousHit, floorTile, CBS;
     private Grid activeGrid;
     public Vector3 target, destinationPosition;
     private Transform playerTransform;

@@ -4,8 +4,8 @@ using System.Collections;
 public class MockEnemy : MonoBehaviour
 {
 
-    public GameObject Player,CBS;
-    public bool ActiveEnemy;
+    public GameObject player,CBS;
+    public bool activeEnemy;
     public int Health;
 
     private bool attacked = false;
@@ -15,8 +15,8 @@ public class MockEnemy : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
-
+        player = Camera.main.GetComponent<PlayerMovement>().player;
+        CBS = Camera.main.GetComponent<PlayerMovement>().CBS;
     }
 
     // Update is called once per frame
@@ -27,7 +27,7 @@ public class MockEnemy : MonoBehaviour
 
         // Check for attacking state
 
-        if (((gameObject.transform.position - Player.transform.position).magnitude) <= 4.0f && (attacked == false))
+        if (((gameObject.transform.position - player.transform.position).magnitude) <= 4.0f && (attacked == false))
         {
             Debug.Log("TO CLOSE");
             Attackcylce();
