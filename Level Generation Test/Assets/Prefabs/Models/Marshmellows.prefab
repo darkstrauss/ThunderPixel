@@ -13,7 +13,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &182686
 GameObject:
@@ -25,13 +25,13 @@ GameObject:
   - 4: {fileID: 430118}
   - 33: {fileID: 3390904}
   - 23: {fileID: 2316252}
-  - 65: {fileID: 6530116}
+  - 136: {fileID: 13634382}
   m_Layer: 0
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &408242
 Transform:
@@ -40,8 +40,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 162938}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.9827976, y: 1.37595987, z: 3.14159107}
-  m_LocalScale: {x: 1.56348073, y: 1.50152278, z: 1.50152278}
+  m_LocalPosition: {x: -.50999999, y: 0, z: -.49000001}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 430118}
   m_Father: {fileID: 0}
@@ -91,8 +91,8 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 182686}
   m_Mesh: {fileID: 4300000, guid: d1e2771b8e9c11c46a70f6fe03d299c0, type: 3}
---- !u!65 &6530116
-BoxCollider:
+--- !u!136 &13634382
+CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -100,16 +100,25 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: .615379989, y: .0482320711, z: .655579984}
-  m_Center: {x: 0, y: .0230161361, z: 0}
+  m_Radius: .333299994
+  m_Height: .699999988
+  m_Direction: 1
+  m_Center: {x: 0, y: .00999999978, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: adb83a3ff72fddf4d881dd1a98f358f2, type: 2}
+    - target: {fileID: 0}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 162938}

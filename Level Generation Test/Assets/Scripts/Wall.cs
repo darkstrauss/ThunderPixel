@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider))]
 public class Wall : MonoBehaviour {
@@ -8,6 +9,8 @@ public class Wall : MonoBehaviour {
     public int xSize, ySize, zSize, gridX;
 
     public Vector3[] wallVerts;
+
+    private List<GameObject> trees;
 
     private Mesh mesh;
 
@@ -33,6 +36,8 @@ public class Wall : MonoBehaviour {
         direction = gameObject.name;
 
         wallMat = Resources.Load<Material>("Materials/wall");
+
+        trees = new List<GameObject>();
 
         if (direction == "front" || direction == "down")
         {
@@ -265,8 +270,9 @@ public class Wall : MonoBehaviour {
             for (int i = 0; i < zSize; i++)
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                trees.Add(tree);
                 tree.transform.parent = transform;
-                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                Vector3 randomRotation = new Vector3(0, Random.Range(-360, 360), 0);
                 tree.transform.Translate(new Vector3(xSize + 0.5f + (i % 2), 0, i * 1 + 0.5f));
                 tree.transform.Rotate(randomRotation);
             }
@@ -276,8 +282,9 @@ public class Wall : MonoBehaviour {
             for (int i = 0; i < xSize; i++)
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                trees.Add(tree);
                 tree.transform.parent = transform;
-                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                Vector3 randomRotation = new Vector3(0, Random.Range(-360, 360), 0);
                 tree.transform.Translate(new Vector3(0.5f + i * 1, 0, zSize + 0.5f + (i % 2)));
                 tree.transform.Rotate(randomRotation);
             }
@@ -287,8 +294,9 @@ public class Wall : MonoBehaviour {
             for (int i = 0; i < xSize; i++)
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                trees.Add(tree);
                 tree.transform.parent = transform;
-                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                Vector3 randomRotation = new Vector3(0, Random.Range(-360, 360), 0);
                 tree.transform.Translate(new Vector3(0.5f + i * 1, 0, -0.5f - (i % 2)));
                 tree.transform.Rotate(randomRotation);
             }
@@ -298,8 +306,9 @@ public class Wall : MonoBehaviour {
             for (int i = 0; i < zSize; i++)
             {
                 GameObject tree = Instantiate(Resources.Load("Prefabs/Tree"), Vector3.zero, Quaternion.identity) as GameObject;
+                trees.Add(tree);
                 tree.transform.parent = transform;
-                Vector3 randomRotation = new Vector3(0, Random.Range(0, 360), 0);
+                Vector3 randomRotation = new Vector3(0, Random.Range(-360, 360), 0);
                 tree.transform.transform.Translate(new Vector3(-0.5f - (i % 2), 0, i * 1 + 0.5f));
                 tree.transform.Rotate(randomRotation);
             }
@@ -308,6 +317,10 @@ public class Wall : MonoBehaviour {
         {
             Debug.LogError("NO DIRECTION SET/INPROPPER");
         }
+
+        trees[trees.Count / 2].GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Materials/SeeThrough");
+        trees[trees.Count / 2 + 1].GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Materials/SeeThrough");
+        trees[trees.Count / 2 - 1].GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Materials/SeeThrough");
     }
 
     private void OnDrawGizmos()

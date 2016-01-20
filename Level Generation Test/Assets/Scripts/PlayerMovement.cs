@@ -4,32 +4,31 @@ using System.Collections.Generic;
 
 public class PlayerMovement : MonoBehaviour
 {
-
     public List<GameObject> floors;
     public List<GameObject> doors;
+    public List<GameObject> floorTiles;
     private Camera mainCamera;
-    public GameObject player, activeFloor, pointer, previousHit;
+    public GameObject player, activeFloor, pointer, previousHit, floorTile;
     private Grid activeGrid;
     public Vector3 target, destinationPosition;
     private Transform playerTransform;
-    private float moveSpeed, previousCast, pastDistance, previousMove;
-    public float remainingDistance;
-    public float destinationDistance;
+    private float previousCast, pastDistance, previousMove;
+    public float remainingDistance, moveSpeed, destinationDistance;
     public GameObject instantiatedPointer;
     public GameObject debugParticle;
     public Material seeThroughMat;
     private Material tempMat;
     private bool raycastObscure, checkForObject;
+    public bool traveling;
 
     void Start()
     {
         mainCamera = Camera.main;
         playerTransform = player.transform;
         destinationPosition = playerTransform.position;
-        //activeFloor = GameObject.FindGameObjectWithTag("floor");
-        //activeGrid = activeFloor.GetComponent<Grid>();
         previousCast = 0;
         raycastObscure = false;
+        traveling = false;
         previousHit = gameObject;
         previousMove = 0;
         checkForObject = false;
@@ -54,7 +53,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (destinationDistance < .01f)
         {
-            moveSpeed = 0;
             remainingDistance = 0;
             ResetPosition(player.transform.position);
             if (activeFloor != null && activeFloor.GetComponent<Grid>().path != null && activeFloor.GetComponent<Grid>().path.Count > 0)
@@ -76,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 checkForObject = true;
             }
-            moveSpeed = 3;
+
             if (remainingDistance == 0)
             {
                 remainingDistance = destinationDistance;
@@ -104,6 +102,12 @@ public class PlayerMovement : MonoBehaviour
                     }
                     instantiatedPointer = Instantiate(pointer, destinationPosition, Quaternion.identity) as GameObject;
 
+                    if (traveling)
+                    {
+                        StopAllCoroutines();
+                        traveling = false;
+                    }
+
                     StartCoroutine(Move());
                 }
             }
@@ -114,20 +118,62 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Move()
     {
+        bool process = false;
+        traveling = true;
         List<MapPosition> path = GetFloor().FindPath(destinationPosition);
-        
-        while (path != null && path.Count > 0)
+
+        if (floorTiles != null && floorTiles.Count > 0)
         {
-            Vector3 movePosition = new Vector3(path[path.Count - 1].xPos + 0.5f, 0.0f, path[path.Count - 1].yPos + 0.5f);
-            Debug.Log("Path list :" + path[path.Count - 1].ToString() + ", Index Count: " + path.Count);
-            Quaternion targetRotation = Quaternion.LookRotation(movePosition - playerTransform.position);
-            playerTransform.rotation = targetRotation;
-            player.transform.position = movePosition;
-            path.RemoveAt(path.Count - 1);
-            yield return new WaitForSeconds(0.3f);
+            for (int i = 0; i < floorTiles.Count; i++)
+            {
+                Destroy(floorTiles[i]);
+            }
+            floorTiles.Clear();
         }
 
-        //activeFloor.GetComponent<Grid>().ClearPath();
+        if (path != null && path.Count > 1)
+        {
+            for (int i = 0; i < path.Count; i++)
+            {
+                Vector3 position = new Vector3((float)path[i].xPos + 0.5f, 0.01f, (float)path[i].yPos + 0.5f);
+
+                GameObject tile = Instantiate(floorTile, position, Quaternion.identity) as GameObject;
+                floorTiles.Add(tile);
+            }
+
+            process = true;
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        while (process)
+        {
+            Vector3 movePosition = new Vector3(path[path.Count - 1].xPos + 0.5f, 0.0f, path[path.Count - 1].yPos + 0.5f);
+            Quaternion targetRotation = Quaternion.LookRotation(movePosition - playerTransform.position);
+            playerTransform.rotation = targetRotation;
+
+            while (!playerTransform.position.Equals(movePosition))
+            {
+                playerTransform.position = Vector3.MoveTowards(playerTransform.position, movePosition, moveSpeed * Time.deltaTime);
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            Destroy(floorTiles[floorTiles.Count - 1]);
+            floorTiles.RemoveAt(floorTiles.Count - 1);
+
+            if (path.Count > 0)
+            {
+                
+                path.RemoveAt(path.Count - 1);
+            }
+
+            if (path.Count == 0)
+            {
+                process = false;
+            }
+        }
+
+        traveling = false;
     }
 
     private void FollowPlayer()
@@ -153,8 +199,16 @@ public class PlayerMovement : MonoBehaviour
     public void ClearRoomList()
     {
         GetFloor().ClearPath();
-        //activeGrid.nodeMap = null;
         doors.RemoveRange(0, doors.Count);
+
+        if (floorTiles != null && floorTiles.Count > 0)
+        {
+            for (int i = 0; i < floorTiles.Count; i++)
+            {
+                Destroy(floorTiles[i]);
+            }
+            floorTiles.Clear();
+        }
     }
 
     public void ResetPosition(Vector3 position)
@@ -165,7 +219,6 @@ public class PlayerMovement : MonoBehaviour
 
     private Grid GetFloor()
     {
-        Grid floor = GameObject.FindGameObjectWithTag("floor").GetComponent<Grid>();
-        return floor;
+        return activeFloor.GetComponent<Grid>();
     }
 }

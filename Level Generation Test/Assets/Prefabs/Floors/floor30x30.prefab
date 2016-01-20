@@ -111,13 +111,13 @@ MonoBehaviour:
   - {fileID: 122152, guid: b7f5e37ab1b058b4d9fb3d4d53274710, type: 2}
   - {fileID: 167412, guid: 69a68a6ba8afa9f41b1ea99d7b4ea49f, type: 2}
   - {fileID: 139190, guid: a6a44e7323e23874bba9cfa4a45dd785, type: 2}
-  - {fileID: 123276, guid: 9396b53cda74b094c84dbaf6fcb89590, type: 2}
+  - {fileID: 155330, guid: baf96c9efbd87b4489d69bc830075c4b, type: 2}
   - {fileID: 162938, guid: aa0e19d4309f8864a88f928732addcbd, type: 2}
   - {fileID: 178052, guid: 6161045a74414ad4b90ebe415f80b401, type: 2}
   - {fileID: 157822, guid: c866df46e55ea184a8bd482b0976d8ba, type: 2}
   takenSpots: []
   text: {fileID: 0}
-  amountOfItems: 35
+  amountOfItems: 50
   SEED: 0
 --- !u!1001 &100100000
 Prefab:
@@ -157,7 +157,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: availibleGameObjects.Array.data[4]
       value: 
-      objectReference: {fileID: 123276, guid: 9396b53cda74b094c84dbaf6fcb89590, type: 2}
+      objectReference: {fileID: 155330, guid: baf96c9efbd87b4489d69bc830075c4b, type: 2}
     - target: {fileID: 0}
       propertyPath: availibleGameObjects.Array.data[3]
       value: 
@@ -174,6 +174,10 @@ Prefab:
       propertyPath: availibleGameObjects.Array.data[0]
       value: 
       objectReference: {fileID: 152550, guid: 138bcfa31a081ad43b35d125ac31d493, type: 2}
+    - target: {fileID: 0}
+      propertyPath: amountOfItems
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 174736}

@@ -38,10 +38,7 @@ public class GenerateContent : MonoBehaviour
         }
         
         Debug.Log("LEVEL SEED: " + SEED);
-    }
 
-    public void OnRenderObject()
-    {
         Generate();
     }
 
@@ -67,27 +64,36 @@ public class GenerateContent : MonoBehaviour
 
                 foreach (Vector3 item in takenSpots)
                 {
-                    if (item.x == temp.transform.position.x && item.z == temp.transform.position.z)
+                    while (temp.transform.position.x == item.x && temp.transform.position.z == item.z)
                     {
                         temp.transform.position += new Vector3((int)Random.Range(-1, 1), 0.0f, (int)Random.Range(-1, 1));
+
+                        if (takenSpots.Equals(temp.transform.position))
+                        {
+                            Destroy(temp);
+                        }
                     }
                 }
 
                 if (temp.transform.position.x > grid.xSize || temp.transform.position.x < 0 || temp.transform.position.z > grid.zSize || temp.transform.position.z < 0)
                 {
                     Destroy(temp);
-                    //Debug.Log("REMOVING OBJECT OUT OF BOUNDS");
                 }
             }
             else if (selection == availibleGameObjects.Count - 1 && placedFountain == false)
             {
-                Debug.Log("PLACING FOUNTAIN");
                 temp.transform.position = new Vector3(Mathf.Floor(grid.xSize / 2) + 0.5f, heightGet, Mathf.Floor(grid.zSize / 2) + 0.5f);
-                List<Vector3> neighbours = getNeighbours(temp.transform.position);
-
-                for (int i = 0; i < neighbours.Count; i++)
+                List<Vector3> neighbours = GetNeighbours(temp.transform.position);
+                if (neighbours != null)
                 {
-                    takenSpots.Add(neighbours[i]);
+                    for (int i = 0; i < neighbours.Count; i++)
+                    {
+                        takenSpots.Add(neighbours[i]);
+                    }
+                }
+                else if (neighbours == null)
+                {
+                    Destroy(temp);
                 }
 
                 availibleGameObjects.RemoveAt(selection);
@@ -99,27 +105,38 @@ public class GenerateContent : MonoBehaviour
                 {
                     while (item.x == temp.transform.position.x && item.z == temp.transform.position.z)
                     {
-                        //Debug.Log("SWAPPING VECTORS FOR OBJECT: " + item);
                         temp.transform.position = new Vector3(Mathf.Floor(Random.Range(1, grid.xSize - 1)) + 0.5f, heightGet, Mathf.Floor(Random.Range(1, grid.zSize - 1)) + 0.5f);
                     }
                 }
             }
 
+            if (selection != 7)
+            {
+                Vector3 randomRotation = new Vector3(0, Random.Range(-360, 360), 0);
+                temp.transform.Rotate(randomRotation);
+            }
+
             lastSelection = selection;
             amountOfItems--;
-            takenSpots.Add(temp.transform.position);
+
+            if (temp != null && temp.transform.position.x < grid.xSize && temp.transform.position.x > 0 && temp.transform.position.z < grid.zSize && temp.transform.position.z > 0)
+            {
+                takenSpots.Add(temp.transform.position);
+            }
+            
 
             if (amountOfItems == 0)
             {
-                Debug.Log("adding " + "#" + takenSpots.Count +  " takenspots to the map");
-                
                 grid.OccupySpots(takenSpots);
             }
+
+            Generate();
         }
     }
 
-    private List<Vector3> getNeighbours(Vector3 currentPosition)
+    private List<Vector3> GetNeighbours(Vector3 currentPosition)
     {
+        bool taken = false;
         List<Vector3> neighbours = new List<Vector3>();
 
         Vector3 up = new Vector3(currentPosition.x, 0.0f, currentPosition.z + 1.0f);
@@ -132,6 +149,28 @@ public class GenerateContent : MonoBehaviour
         neighbours.Add(right);
         neighbours.Add(left);
 
-        return neighbours;
+        for (int i = 0; i < takenSpots.Count; i++)
+        {
+            if (takenSpots[i].x == right.x || takenSpots[i].x == left.x)
+            {
+                taken = true;
+                break;
+            }
+            else if (takenSpots[i].z == up.z || takenSpots[i].z == down.z)
+            {
+                taken = true;
+                break;
+            }
+        }
+
+        if (taken)
+        {
+            return null;
+        }
+        else
+        {
+            return neighbours;
+        }
+        
     }
 }

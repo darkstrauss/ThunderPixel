@@ -6,7 +6,8 @@ using System.Collections.Generic;
 public class Grid : MonoBehaviour
 {
 
-    private Material floorMaterial, waterMaterial;
+    private Material floorMaterial;
+    //private Material waterMaterial;
     public int xSize, zSize;
 
     public Vector3[] floorVerts, waterVerts;
@@ -41,12 +42,10 @@ public class Grid : MonoBehaviour
         Camera.main.GetComponent<PlayerMovement>().activeFloor = this.gameObject;
         Generate();
         GenerateAStarPath();
-        Debug.Log("NEW NODEMAP LENGTH: " + nodeMap.Length);
     }
 
     private void GenerateAStarPath()
     {
-        Debug.Log("GENERATING ASTARTMAP");
         map = new int[xSize, zSize];
 
         for (int x = 0, i = 0; x < xSize; x++)
@@ -104,7 +103,6 @@ public class Grid : MonoBehaviour
                     count++;
                     path.Add(currentNode.position);
                     currentNode = nodeMap[currentNode.parent.xPos, currentNode.parent.yPos];
-                    Debug.Log(currentNode.position.xPos + ", " + currentNode.position.yPos);
                     if (count > xSize * zSize * 6)
                     {
                         Debug.LogError("out of range");
@@ -112,7 +110,6 @@ public class Grid : MonoBehaviour
                     }
                 }
                 path.Add(start);
-                Debug.Log("Path length: " + path.Count);
                 return path;
             }
 
@@ -235,7 +232,7 @@ public class Grid : MonoBehaviour
         Vector2[] uvFloor = new Vector2[floorVerts.Length];
 
         floorMaterial = Resources.Load<Material>("Materials/floor");
-        waterMaterial = Resources.Load<Material>("Materials/water");
+        //waterMaterial = Resources.Load<Material>("Materials/water");
 
         for (int i = 0, y = 0; y < zSize + 1; y++)
         {
@@ -284,10 +281,10 @@ public class Grid : MonoBehaviour
 
         gameObject.tag = "floor";
 
-        GameObject water = new GameObject("water");
-        water.transform.parent = gameObject.transform;
-        water.tag = "water";
-        water.AddComponent<Water>();
+        //GameObject water = new GameObject("water");
+        //water.transform.parent = gameObject.transform;
+        //water.tag = "water";
+        //water.AddComponent<Water>();
     }
 
     public void ClearPath()
@@ -332,11 +329,6 @@ public class Grid : MonoBehaviour
     private void OnDestroy()
     {
         nodeMap = null;
-    }
-
-    private void Update()
-    {
-        
     }
 
     public List<GameObject> GetDoors()

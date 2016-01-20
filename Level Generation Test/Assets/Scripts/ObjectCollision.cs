@@ -10,14 +10,12 @@ public class ObjectCollision : MonoBehaviour
     public bool isTouchingDown, isTouchingRight;
     public List<GameObject> obscureListDown, obscureListRight;
     public List<Material> obscureMatListDown, obscureMatListRight;
-    private float remainingDistance;
 
     void Start()
     {
         previousHit = gameObject;
         isTouchingDown = false;
         isTouchingRight = false;
-        remainingDistance = 0;
     }
 
     public void CollisionDetection()
@@ -101,7 +99,6 @@ public class ObjectCollision : MonoBehaviour
 
     private void RayCastFromHitObjectDown(GameObject castFromThis)
     {
-        Debug.Log("OI, THIS WANKER ON THE BOTTOM IS IN THE WAY!");
         Vector3 castPoint = new Vector3(castFromThis.transform.position.x, 0.0f, castFromThis.transform.position.z);
         RaycastHit hit;
         Ray rayLeft = new Ray(castPoint, Vector3.left);
@@ -126,7 +123,6 @@ public class ObjectCollision : MonoBehaviour
 
     private void RayCastFromHitObjectRight(GameObject castFromThis)
     {
-        Debug.Log("OI, THIS WANKER TO THE RIGHT IS IN THE WAY!");
         Vector3 castPoint = new Vector3(castFromThis.transform.position.x, 0.0f, castFromThis.transform.position.z);
         RaycastHit hit;
         Ray rayUp = new Ray(castPoint, Vector3.forward);

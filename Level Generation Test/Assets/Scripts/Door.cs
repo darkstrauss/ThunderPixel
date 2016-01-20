@@ -11,7 +11,6 @@ public class Door : MonoBehaviour {
     private Mesh mesh;
     public Vector3[] doorVerts;
     public GameObject floor;
-    private Grid grid;
     public Material doorMaterial;
     private Vector2 materialScale;
     private Vector2[] uv;
@@ -22,7 +21,6 @@ public class Door : MonoBehaviour {
     void Awake()
     {
         justTraveled = 0;
-        //Debug.Log("RUNNING START() IN DOOR.CS" + justTraveled);
         gameObject.isStatic = true;
         gameObject.transform.localPosition = Vector3.zero;
 
@@ -30,7 +28,6 @@ public class Door : MonoBehaviour {
 
         wall = transform.parent.GetComponent<Wall>();
         floor = transform.parent.transform.parent.gameObject;
-        grid = floor.GetComponent<Grid>();
             
         playerInteraction = Camera.main.GetComponent<PlayerMovement>();
         
@@ -44,7 +41,7 @@ public class Door : MonoBehaviour {
         }
 
         xSize = 1;
-        ySize = 2;
+        ySize = 3;
         gridX = wall.xSize;
 
         Generate();
@@ -149,20 +146,16 @@ public class Door : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (justTraveled > TIMEWAIT)
+        if (justTraveled > TIMEWAIT && !playerInteraction.traveling)
         {
-            Debug.Log("TOUCHED DOOR: " + tag);
             GameObject trackPrevious = playerInteraction.activeFloor;
             playerInteraction.player.GetComponent<ObjectCollision>().ForceClearList();
             playerInteraction.ClearRoomList();
-            GameObject newFloor = Instantiate(GetFloor(), Vector3.zero, Quaternion.identity) as GameObject;
+            Instantiate(GetFloor(), Vector3.zero, Quaternion.identity);
             List<GameObject> newDoorList = playerInteraction.activeFloor.GetComponent<Grid>().doors;
-
-            Debug.Log("CURRENT DOOR COUNT: " + playerInteraction.activeFloor.GetComponent<Grid>().doors.Count);
 
             if (tag == "front")
             {
-                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
                 for (int i = 0; i < newDoorList.Count; i++)
                 {
                     if (newDoorList[i].tag == "left")
@@ -178,7 +171,6 @@ public class Door : MonoBehaviour {
             }
             else if (tag == "back")
             {
-                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
                 for (int i = 0; i < newDoorList.Count; i++)
                 {
                     if (newDoorList[i].tag == "down")
@@ -194,7 +186,6 @@ public class Door : MonoBehaviour {
             }
             else if (tag == "down")
             {
-                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
                 for (int i = 0; i < newDoorList.Count; i++)
                 {
                     if (newDoorList[i].tag == "back")
@@ -210,10 +201,8 @@ public class Door : MonoBehaviour {
             }
             else if (tag == "left")
             {
-                Debug.Log("ATTEMPTING TO LOOK THROUGH DOORS LIST FOR DIRECTION: " + tag);
                 for (int i = 0; i < newDoorList.Count; i++)
                 {
-                    Debug.Log("CHECKING FOR NEW DOOR: " + i);
                     if (newDoorList[i].tag == "front")
                     {
                         GameObject teleportDoor = newDoorList[i];
@@ -226,8 +215,6 @@ public class Door : MonoBehaviour {
                 }
             }
             justTraveled = 0;
-
-            
         }
     }
 
