@@ -4,31 +4,33 @@ using System.Collections.Generic;
 
 public class EnemyBehaviour : MonoBehaviour
 {
+    public static float GOTOPLAYERDISTANCE = 4.5f;
+    public static float STARTCOMBARDISTANCE = 1.5f;
+    private static int WALL = 0;
+    private static int FLOOR = 1;
+    private static int START = 2;
+    private static int GOAL = 3;
+
     private float moveSpeed = 3.0f;
-
-    public static int WALL = 0;
-    public static int FLOOR = 1;
-    public static int START = 2;
-    public static int GOAL = 3;
-
     private GameObject player;
     private PlayerMovement playerMovement;
     private Grid grid;
-    public bool process;
     private MapPosition playerPosition, enemyPosition;
     public AStarNode currentNode, goal;
     List<AStarNode> closed = new List<AStarNode>();
     List<AStarNode> open = new List<AStarNode>();
     List<MapPosition> path;
     public AStarNode[,] nodeMap;
-    public int xSize, zSize;
+    private int xSize, zSize;
     public int[,] map;
+    public bool selectedPlayer = false;
+
+    private IEnumerator goToPlayer, idle;
 
     public int pathCount;
 
-    public void Initialize()
+    public void Start()
     {
-        process = false;
         playerMovement = Camera.main.GetComponent<PlayerMovement>();
         player = playerMovement.player;
         grid = playerMovement.GetFloor();
@@ -36,20 +38,28 @@ public class EnemyBehaviour : MonoBehaviour
         zSize = grid.zSize;
         nodeMap = grid.nodeMap;
         map = grid.map;
+        goToPlayer = Move(false);
+        idle = Move(true);
 
-        MoveToPlayer();
+        StartCoroutine(idle);
     }
 
-    private void MoveToPlayer()
+    private IEnumerator Move(bool patrol)
     {
-        StartCoroutine(Move());
-    }
+        if (patrol)
+        {
+            path = GetPath();
+            Debug.Log("patrolling");
+        }
+        else
+        {
+            path = GetPathToPlayer();
+            Debug.Log("moving to player");
+        }
 
-    private IEnumerator Move()
-    {
-        process = true;
-        path = FindPath();
-        yield return new WaitForSeconds(0.2f);
+        Debug.Log(path.Count);
+
+        bool process = true;
 
         while (process)
         {
@@ -60,16 +70,23 @@ public class EnemyBehaviour : MonoBehaviour
             while (!gameObject.transform.position.Equals(movePosition))
             {
                 gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, movePosition, moveSpeed * Time.deltaTime);
+                
                 yield return new WaitForSeconds(0.01f);
             }
 
             if (path.Count > 0)
             {
                 path.RemoveAt(path.Count - 1);
+                Debug.Log(path.Count);
             }
 
             if (path.Count <= 1)
             {
+                if (patrol)
+                {
+                    StartCoroutine(idle);
+                }
+                path.Clear();
                 process = false;
             }
         }
@@ -152,34 +169,42 @@ public class EnemyBehaviour : MonoBehaviour
         return null;
     }
 
-    public List<AStarNode> GetNeighbours(MapPosition current)
+    private List<AStarNode> GetNeighbours(MapPosition current)
     {
         List<AStarNode> neighbours = new List<AStarNode>();
 
         if (current.yPos > 0 && map[current.xPos, current.yPos - 1] == FLOOR && !closed.Contains(nodeMap[current.xPos, current.yPos - 1]))
-        {
             neighbours.Add(nodeMap[current.xPos, current.yPos - 1]);
-        }
 
         if (current.yPos < zSize - 1 && map[current.xPos, current.yPos + 1] == FLOOR && !closed.Contains(nodeMap[current.xPos, current.yPos + 1]))
-        {
             neighbours.Add(nodeMap[current.xPos, current.yPos + 1]);
-        }
 
         if (current.xPos > 0 && map[current.xPos - 1, current.yPos] == FLOOR && !closed.Contains(nodeMap[current.xPos - 1, current.yPos]))
-        {
             neighbours.Add(nodeMap[current.xPos - 1, current.yPos]);
-        }
 
         if (current.xPos < xSize - 1 && map[current.xPos + 1, current.yPos] == FLOOR && !closed.Contains(nodeMap[current.xPos + 1, current.yPos]))
-        {
             neighbours.Add(nodeMap[current.xPos + 1, current.yPos]);
-        }
 
         return neighbours;
     }
 
-    public List<MapPosition> FindPath()
+    private List<MapPosition> GetPath()
+    {
+        if (path != null && path.Count > 0)
+        {
+            path.Clear();
+        }
+        closed.Clear();
+        open.Clear();
+
+        currentNode = nodeMap[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+        List<AStarNode> neighbours = GetNeighbours(currentNode.position);
+        goal = nodeMap[neighbours[0].position.xPos, neighbours[0].position.yPos];
+
+        return FindPath(currentNode.position, goal.position);
+    }
+
+    private List<MapPosition> GetPathToPlayer()
     {
         if (path != null && path.Count > 0)
         {
@@ -190,8 +215,34 @@ public class EnemyBehaviour : MonoBehaviour
 
         currentNode = nodeMap[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
         goal = nodeMap[Mathf.FloorToInt(player.transform.position.x), Mathf.FloorToInt(player.transform.position.z)];
-        path = FindPath(currentNode.position, goal.position);
 
-        return path;
+        return FindPath(currentNode.position, goal.position);
+    }
+
+    private void Update()
+    {
+        if ((gameObject.transform.position - player.transform.position).magnitude <= GOTOPLAYERDISTANCE && !selectedPlayer)
+        {
+            //StopCoroutine(idle);
+            StartCoroutine(goToPlayer);
+
+            selectedPlayer = true;
+        }
+
+        if ((gameObject.transform.position - player.transform.position).magnitude <= STARTCOMBARDISTANCE)
+        {
+            StopAllCoroutines();
+            ResetPosition(transform.position);
+        }
+
+        if (MapPosition.EucludianDistance(currentNode.position, goal.position) > GOTOPLAYERDISTANCE)
+        {
+            selectedPlayer = false;
+        }
+    }
+
+    private void ResetPosition(Vector3 position)
+    {
+        transform.position = new Vector3(Mathf.Floor(position.x) + 0.5f, 1.0f, Mathf.Floor(position.z) + 0.5f);
     }
 }

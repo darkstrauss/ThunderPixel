@@ -7,11 +7,13 @@ public class CombatSystem : MonoBehaviour {
     public int Health;
     public GameObject DodgeCircleL, DodgeCircleR;
     public GameObject ActiveEnemy;
+    private PlayerMovement playerMovement;
 
     private IEnumerator coroutine1, coroutine2;
 
     private void Awake()
     {
+        playerMovement = Camera.main.GetComponent<PlayerMovement>();
         ResetCo();
     }
     // Use this for initialization

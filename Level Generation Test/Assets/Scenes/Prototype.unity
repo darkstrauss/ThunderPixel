@@ -101,9 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8875a67355f406c41a00c043caa661cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  process: 0
-  xSize: 0
-  zSize: 0
+  selectedPlayer: 0
   pathCount: 0
 --- !u!1 &372460341
 GameObject:
@@ -223,6 +221,7 @@ MonoBehaviour:
   debugParticle: {fileID: 149510, guid: 7968adb9abb4344489740c5a6faee98e, type: 2}
   seeThroughMat: {fileID: 2100000, guid: 7254685213ca0964ebc9c69c2b315fc7, type: 2}
   traveling: 0
+  inCombat: 0
 --- !u!1 &395512127
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +482,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 412286, guid: 80ef37cc6b4200f46b68fbb8b34a3bfc, type: 2}
       propertyPath: m_LocalPosition.x
-      value: .5
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 412286, guid: 80ef37cc6b4200f46b68fbb8b34a3bfc, type: 2}
       propertyPath: m_LocalPosition.y

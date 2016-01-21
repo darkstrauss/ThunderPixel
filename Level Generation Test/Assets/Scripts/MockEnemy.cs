@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MockEnemy : MonoBehaviour
 {
-
+    public static float STARTCOMBATDISTANCE = 1.5f;
     public GameObject player,CBS;
     public bool activeEnemy;
     public int Health;
@@ -17,15 +17,6 @@ public class MockEnemy : MonoBehaviour
     {
         player = Camera.main.GetComponent<PlayerMovement>().player;
         CBS = Camera.main.GetComponent<PlayerMovement>().CBS;
-
-        StartCoroutine(InitEnemy());
-    }
-
-    IEnumerator InitEnemy()
-    {
-        yield return new WaitForSeconds(2);
-
-        gameObject.GetComponent<EnemyBehaviour>().Initialize();
     }
 
     // Update is called once per frame
@@ -36,7 +27,7 @@ public class MockEnemy : MonoBehaviour
 
         // Check for attacking state
 
-        if (((gameObject.transform.position - player.transform.position).magnitude) <= 4.0f && (attacked == false))
+        if (((gameObject.transform.position - player.transform.position).magnitude) <= STARTCOMBATDISTANCE && (attacked == false))
         {
             Debug.Log("TO CLOSE");
             Attackcylce();

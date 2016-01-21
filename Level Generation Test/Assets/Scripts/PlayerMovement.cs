@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public Material seeThroughMat;
     private Material tempMat;
     private bool raycastObscure, checkForObject;
-    public bool traveling;
+    public bool traveling, inCombat;
 
     void Start()
     {
@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
         previousCast = 0;
         raycastObscure = false;
         traveling = false;
+        inCombat = false;
         previousHit = gameObject;
         previousMove = 0;
         checkForObject = false;
@@ -84,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
         previousMove += Time.deltaTime;
 
         // Moves the Player if the Left Mouse Button was clicked
-        if (Input.GetMouseButtonUp(0) && previousMove > 0.3f)
+        if (Input.GetMouseButtonUp(0) && previousMove > 0.3f && !inCombat)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
