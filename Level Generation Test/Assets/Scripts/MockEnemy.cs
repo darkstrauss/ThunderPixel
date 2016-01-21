@@ -16,8 +16,22 @@ public class MockEnemy : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+<<<<<<< HEAD
 
 
+=======
+        player = Camera.main.GetComponent<PlayerMovement>().player;
+        CBS = Camera.main.GetComponent<PlayerMovement>().CBS;
+
+        StartCoroutine(InitEnemy());
+    }
+
+    IEnumerator InitEnemy()
+    {
+        yield return new WaitForSeconds(2);
+
+        gameObject.GetComponent<EnemyBehaviour>().Initialize();
+>>>>>>> origin/master
     }
 
     // Update is called once per frame

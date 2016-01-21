@@ -86,6 +86,25 @@ NavMeshSettings:
     cellSize: .166666672
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &341878527 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 112290, guid: 80ef37cc6b4200f46b68fbb8b34a3bfc, type: 2}
+  m_PrefabInternal: {fileID: 1184664479}
+--- !u!114 &341878532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 341878527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8875a67355f406c41a00c043caa661cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  process: 0
+  xSize: 0
+  zSize: 0
+  pathCount: 0
 --- !u!1 &372460341
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +216,7 @@ MonoBehaviour:
   target: {x: 0, y: 0, z: 0}
   destinationPosition: {x: 0, y: 0, z: 0}
   remainingDistance: 0
-  moveSpeed: 10
+  moveSpeed: 5
   destinationDistance: 0
   instantiatedPointer: {fileID: 0}
   debugParticle: {fileID: 149510, guid: 7968adb9abb4344489740c5a6faee98e, type: 2}
