@@ -524,6 +524,7 @@ MonoBehaviour:
   CBS: {fileID: 751917430}
   ActiveEnemy: 0
   Health: 100
+  Dmg: 15
 --- !u!1001 &1345312037
 Prefab:
   m_ObjectHideFlags: 0
@@ -1007,10 +1008,10 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 129270, guid: 1f4c424e103876a4795545b4cb660e48, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 11496508, guid: 1f4c424e103876a4795545b4cb660e48, type: 2}
+      propertyPath: ActiveEnemy
+      value: 
+      objectReference: {fileID: 1132652346}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1f4c424e103876a4795545b4cb660e48, type: 2}
   m_IsPrefabParent: 0
