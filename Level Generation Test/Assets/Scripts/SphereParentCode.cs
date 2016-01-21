@@ -21,7 +21,7 @@ public class SphereParentCode : MonoBehaviour
 
     private List<string> InputStrikeList = new List<string>();
     private List<string> OutputStrikeList = new List<string>();
-    private List<int> OutputDMG = new List<int>();
+    private int TotalDMG;
 
     private string IDString1, IDString2, IDString3, IDString4;
     private bool striking, strikeFound;
@@ -40,6 +40,7 @@ public class SphereParentCode : MonoBehaviour
 
     public GameObject ApCircleL;
     public GameObject ApCircleR;
+    public GameObject CBS;
 
     private List<GameObject> Buttons = new List<GameObject>();
 
@@ -121,8 +122,6 @@ public class SphereParentCode : MonoBehaviour
         StopCoroutine(WaitForStrike());
 
         StartCoroutine(WaitForStrike());
-        
-
     }
 
     public void ReturnSphereIDs()
@@ -168,7 +167,7 @@ public class SphereParentCode : MonoBehaviour
                     if (strike == strikeData[item][0]["pos"][i].ToString())
                     {
                         strikeFound = true;                                           
-                        OutputDMG.Add(int.Parse(strikeData[item][1]["AttackStats"][2].ToString()));
+                        TotalDMG += (int.Parse(strikeData[item][1]["AttackStats"][2].ToString()));
                         OutputStrikeList.Add(strikeData[item][1]["AttackStats"][0].ToString());
                         break;
                     }
@@ -190,7 +189,6 @@ public class SphereParentCode : MonoBehaviour
 
         // Add Dmg Callculation
 
-
         // Outputcall
         OutputFun();
 
@@ -208,6 +206,20 @@ public class SphereParentCode : MonoBehaviour
                 {
                     VisualCombo++;
                     Output.text = ("Combo " + VisualCombo + "X");
+                    foreach (string item in UsableStrikes)
+                    {
+                        for (int i = 0; i < strikeData[item][0]["pos"].Count; i++)
+                        {
+                            if (IDString2 == strikeData[item][0]["pos"][i].ToString())
+                            {
+                                TotalDMG *= (int.Parse(strikeData[item][1]["AttackStats"][1].ToString()));
+                                break;
+                            }
+                        }
+                        if (strikeFound)
+                            break;
+                    }
+
                 }
                 else
                 {
@@ -221,6 +233,19 @@ public class SphereParentCode : MonoBehaviour
                     {
                         VisualCombo++;
                         Output.text = ("Combo " + VisualCombo + "X");
+                        foreach (string item in UsableStrikes)
+                        {
+                            for (int i = 0; i < strikeData[item][0]["pos"].Count; i++)
+                            {
+                                if (IDString3 == strikeData[item][0]["pos"][i].ToString())
+                                {
+                                    TotalDMG *= (int.Parse(strikeData[item][1]["AttackStats"][1].ToString()));
+                                    break;
+                                }
+                            }
+                            if (strikeFound)
+                                break;
+                        }
                     }
                     else
                     {
@@ -233,6 +258,19 @@ public class SphereParentCode : MonoBehaviour
                         {
                             VisualCombo++;
                             Output.text = ("Combo " + VisualCombo + "X");
+                            foreach (string item in UsableStrikes)
+                            {
+                                for (int i = 0; i < strikeData[item][0]["pos"].Count; i++)
+                                {
+                                    if (IDString4 == strikeData[item][0]["pos"][i].ToString())
+                                    {
+                                        TotalDMG *= (int.Parse(strikeData[item][1]["AttackStats"][2].ToString()));
+                                        break;
+                                    }
+                                }
+                                if (strikeFound)
+                                    break;
+                            }
                         }
                         else
                         {
@@ -256,7 +294,6 @@ public class SphereParentCode : MonoBehaviour
     private void Reset ()
     {
         VisualCombo = 1;
-        OutputDMG.Clear();
         InputStrikeList.Clear();
         Strike1.Clear();
         Strike2.Clear();
@@ -267,17 +304,13 @@ public class SphereParentCode : MonoBehaviour
         IDString3 = "";
         IDString4 = "";
         currentStrike = 1;
+        TotalDMG = 0;
     }
     public void OutputFun ()
     {
-
+        CBS.GetComponent<CombatSystem>().EnemyHealthDown(TotalDMG);
     }
 
-    public void Dodge()
-    {
-        //ApCircleL.transform.localScale = new Vector3(1f, 1f, 1f);
-        
-    }
 
     IEnumerator WaitForStrike()
     {
